@@ -39,7 +39,7 @@ function getComparator(order, orderBy) {
 }
 
 function EnhancedTableHead(props) {
-    const { headCells, order, orderBy, rowCount, onRequestSort } =
+    const { headCells, order, orderBy, onRequestSort } =
         props;
     const createSortHandler = (property) => (event) => {
         onRequestSort(event, property);
@@ -73,7 +73,6 @@ function EnhancedTableHead(props) {
 }
 
 EnhancedTableHead.propTypes = {
-    //numSelected: PropTypes.number.isRequired,
     onRequestSort: PropTypes.func.isRequired,
     headCells: PropTypes.array.isRequired,
     order: PropTypes.oneOf(['asc', 'desc']).isRequired,
