@@ -151,7 +151,7 @@ const ExcelTable = () => {
     const [orderBy, setOrderBy] = React.useState(1);
 
     useEffect(() => {
-        const filePath = "/research-list.xlsx";
+        const filePath = "./research-list.xlsx";
         fetch(filePath)
             .then(response => response.arrayBuffer())
             .then(buffer => {
