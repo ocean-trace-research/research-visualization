@@ -37,10 +37,6 @@
   }
 }
 
-table {
-
-}
-
-td {
-  border: 1px black solid;
+a:hover {
+  cursor: pointer;
 }
