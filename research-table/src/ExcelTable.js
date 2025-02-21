@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -148,9 +149,10 @@ const ExcelTable = () => {
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [order, setOrder] = React.useState('desc');
     const [orderBy, setOrderBy] = React.useState(1);
+    const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
-        const filePath = "./research-list.xlsx";
+        const filePath = "research-visualization/research-list.xlsx";
         fetch(filePath)
             .then(response => response.arrayBuffer())
             .then(buffer => {
@@ -170,18 +172,24 @@ const ExcelTable = () => {
         setOrderBy(property);
     };
 
-    // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rowData.slice(1).length) : 0;
+
+    const filteredData = rowData.filter((row) =>
+        Object.values(row).some((value) =>
+            value.toString().toLowerCase().includes(searchQuery.toString().toLowerCase())
+        ))
 
     const visibleRows = React.useMemo(
         () =>
-            [...rowData]
+            [...filteredData]
                 .sort(getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-        [order, orderBy, page, rowsPerPage, rowData],
+        [order, orderBy, page, rowsPerPage, filteredData],
     );
 
+    // Avoid a layout jump when reaching the last page with empty rows.
+    const emptyRows =
+        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rowData.length) : 0;
+    
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -191,11 +199,21 @@ const ExcelTable = () => {
         setPage(0);
     };
 
+    const handleChangeSearchQuery = (event) => {
+        setSearchQuery(event.target.value)
+    }
+
     return (
         <div className="p-4">
             <Paper sx={{ maxHeight: window.innerHeight, width: window.innerWidth, overflowY: 'scroll' }}>
                 <TableContainer sx={{ maxHeight: '95%' }}>
-                    {rowData.length > 0 && (
+                    <TextField
+                        label="Search"
+                        variant="outlined"
+                        onChange={handleChangeSearchQuery}
+                        style={{ marginBottom: "20px" }}
+                    />
+                    {filteredData.length > 0 && (
                         <Table stickyHeader aria-label="sticky custom pagination table">
                             <caption>A table with research related to trace elements in ocean</caption>
                             <EnhancedTableHead
@@ -206,7 +224,7 @@ const ExcelTable = () => {
                                 rowCount={rowData.length}
                             />
                             <TableBody>
-                                {(rowsPerPage > 0 ? visibleRows : rowData).map((row, index) => (
+                                {(rowsPerPage > 0 ? visibleRows : filteredData).map((row, index) => (
                                     <TableRow key={index}>
                                         <TableCell sx={{ width: '15%' }}><Link color="primary" href={row[4]} target="_blank">{row[0]}</Link></TableCell>
                                         <TableCell sx={{ width: '5%' }}>{row[1]}</TableCell>
@@ -225,7 +243,7 @@ const ExcelTable = () => {
                                     <TablePagination
                                         rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                                         colSpan={3}
-                                        count={rowData.length}
+                                        count={filteredData.length}
                                         rowsPerPage={rowsPerPage}
                                         page={page}
                                         onPageChange={handleChangePage}
