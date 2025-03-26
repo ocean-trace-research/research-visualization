@@ -189,7 +189,7 @@ const ExcelTable = () => {
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rowData.length) : 0;
-    
+
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -200,22 +200,24 @@ const ExcelTable = () => {
     };
 
     const handleChangeSearchQuery = (event) => {
-        setSearchQuery(event.target.value)
+        if (event.target.value.length <= 100) {
+            setSearchQuery(event.target.value)
+        }        
     }
 
     return (
         <div className="p-4">
-            <Paper sx={{ maxHeight: window.innerHeight, width: window.innerWidth, overflowY: 'scroll' }}>
-                <TableContainer sx={{ maxHeight: '95%' }}>
+            <Paper sx={{ maxHeight: 0.85 * window.innerHeight, width: 0.95 * window.innerWidth, overflowY: 'scroll' }}>
+                <TableContainer>
                     <TextField
-                        label="Search"
+                        label="Search Papers"
                         variant="outlined"
                         onChange={handleChangeSearchQuery}
-                        style={{ marginBottom: "20px" }}
+                        style={{ align: "left", marginLeft:"10px", float:"left", marginTop: "10px", marginBottom: "10px", width:"400px" }}
                     />
                     {filteredData.length > 0 && (
                         <Table stickyHeader aria-label="sticky custom pagination table">
-                            <caption>A table with research related to trace elements in ocean</caption>
+                            <caption>A table with research papers related to trace elements in ocean</caption>
                             <EnhancedTableHead
                                 headCells={headData}
                                 order={order}

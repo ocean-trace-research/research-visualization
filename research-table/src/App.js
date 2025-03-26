@@ -1,11 +1,12 @@
 import './App.css';
-import ExcelTable from './ExcelTable';
+import ExcelTable from './table/ExcelTable';
+import Home from './home/Home';
 
 function App() {
 
   return (
     <div className="App">
-        <ExcelTable />
+        <Home />
     </div>
   );
 }
