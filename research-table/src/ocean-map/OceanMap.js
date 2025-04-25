@@ -91,19 +91,26 @@ const OceanMap = () => {
           },
           {
             "type": "Feature", "properties": { "name": "Bay of Bengal" },
-            "geometry": { "type": "Polygon", "coordinates": [[[80, 30], [80, -50], [110, -50], [80, 30]]] }
+            "geometry": { "type": "Polygon", "coordinates": [[[80, 30], [80, -20], [110, -20], [80, 30]]] }
           },
           {
             "type": "Feature", "properties": { "name": "Arabian Sea" },
-            "geometry": { "type": "Polygon", "coordinates": [[[30, 30], [30, -50], [80, -50], [80, 30]]] }
+            "geometry": { "type": "Polygon", "coordinates": [[[30, 30], [30, -20], [80, -20], [80, 30]]] }
+          },
+          {
+            "type": "Feature", "properties": { "name": "Indian Ocean" },
+            "geometry": { "type": "Polygon", "coordinates": [[[30, -20], [30, -50], [110, -50], [110, -20]]] }
           },
           {
             "type": "Feature", "properties": { "name": "Southern Ocean" },
             "geometry": { "type": "Polygon", "coordinates": [[[-50, 0], [-90, 0], [-90, 360], [-50, 360]]] }
           },
           {
-            "type": "Feature", "properties": { "name": "Arctic Ocean" },
-            "geometry": { "type": "Polygon", "coordinates": [[[0, 90], [0, 60], [360, 60], [360, 90]]] }
+            "type": "Feature", "properties": 
+            { "name": "Arctic Ocean" },
+            "geometry": { "type": "Polygon", 
+              "coordinates": [[[0, 90], [0, 60], [360, 60], [360, 90]]] 
+            }
           },
         ]
       }
@@ -123,45 +130,44 @@ const OceanMap = () => {
       // ];      
 
       svg.selectAll("path")
-      .data(oceans.features)
-      //.enter()
-      .append("path")
-      //.attr("class", "ocean")
-      .attr("d", path)
-      .attr("fill", "#b8b8b8")
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 0.5)
-      // oceans.forEach(ocean => {
-      //   //ocean.coords.forEach((polygonCoords) => {
-      //   const oceanPolygon = {
-      //     type: "Feature",
-      //     geometry: {
-      //       type: "Polygon",
-      //       coordinates: [ocean.coords]
-      //     }
-      //   };
+        .data(oceans.features)
+        //.enter()
+        .append("path")
+        //.attr("class", "ocean")
+        .attr("d", path)
+        .attr("fill", "#b8b8b8")
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 0.5)
 
-      //   svg.append("path")
-      //     .attr('class', ocean.name)
-      //     .datum(oceanPolygon)
-      //     .attr("d", path)
-      //     .attr("fill", ocean.color)
-      //     .attr("opacity", 0.75)
-      //     .attr("stroke", "#08306b")        // Border color
-      //     .attr("stroke-width", 1.5);       // Border width
-        //});
+      oceans.forEach(ocean => {
+        //ocean.coords.forEach((polygonCoords) => {
+        const oceanPolygon = {
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: [ocean.coords]
+          }
+        }
 
-        // Add ocean labels
-        // const [x, y] = projection(ocean.label);
-        // svg.append("text")
-        //   .attr("x", x)
-        //   .attr("y", y)
-        //   .attr("text-anchor", "middle")
-        //   .style("fill", "#08306b")
-        //   .style("font-size", "18px")
-        //   .style("font-weight", "bold")
-        //   .text(ocean.name);
-      // });
+        svg.append("path")
+          .attr('class', ocean.name)
+          .datum(oceanPolygon)
+          .attr("d", path)
+          .attr("fill", ocean.color)
+          .attr("opacity", 0.75)
+          .attr("stroke", "#08306b")        // Border color
+          .attr("stroke-width", 1.5);       // Border width
+        //Add ocean labels
+        const [x, y] = projection(ocean.label);
+        svg.append("text")
+          .attr("x", x)
+          .attr("y", y)
+          .attr("text-anchor", "middle")
+          .style("fill", "#08306b")
+          .style("font-size", "18px")
+          .style("font-weight", "bold")
+          .text(ocean.name);
+      });
     });
   }, []);
 

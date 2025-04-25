@@ -21,6 +21,7 @@ import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import { visuallyHidden } from '@mui/utils';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 
 function descendingComparator(a, b, orderBy) {
@@ -142,17 +143,17 @@ TablePaginationActions.propTypes = {
     rowsPerPage: PropTypes.number.isRequired,
 };
 
-const ExcelTable = () => {
+const ExcelTable = ({ocean}) => {
     const [headData, setHeadData] = useState([]);
     const [rowData, setRowData] = useState([]);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [order, setOrder] = React.useState('desc');
     const [orderBy, setOrderBy] = React.useState(1);
-    const [searchQuery, setSearchQuery] = useState("");
+    const [searchQuery, setSearchQuery] = useState(ocean);
 
     useEffect(() => {
-        const filePath = "research-visualization/research-list.xlsx";
+        const filePath = "research-visualization/mapped_studies.xlsx";
         fetch(filePath)
             .then(response => response.arrayBuffer())
             .then(buffer => {
@@ -160,7 +161,8 @@ const ExcelTable = () => {
                 const sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
                 const parsedData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                setHeadData(parsedData[0].slice(0, 4));
+                parsedData[0].splice(4, 9)
+                setHeadData(parsedData[0]);
                 setRowData(parsedData.slice(1))
             })
             .catch(error => console.error("Error loading Excel file:", error));
@@ -212,6 +214,7 @@ const ExcelTable = () => {
                     <TextField
                         label="Search Papers"
                         variant="outlined"
+                        defaultValue={ocean}
                         onChange={handleChangeSearchQuery}
                         style={{ align: "left", marginLeft:"10px", float:"left", marginTop: "10px", marginBottom: "10px", width:"400px" }}
                     />
@@ -231,7 +234,12 @@ const ExcelTable = () => {
                                         <TableCell sx={{ width: '15%' }}><Link color="primary" href={row[4]} target="_blank">{row[0]}</Link></TableCell>
                                         <TableCell sx={{ width: '5%' }}>{row[1]}</TableCell>
                                         <TableCell sx={{ width: '55%' }}>{row[2]}</TableCell>
-                                        <TableCell sx={{ width: '20%' }}><Link color="primary" href={row[3]} target="_blank">{row[3]}</Link></TableCell>
+                                        <TableCell sx={{ width: '5%' }}><Link color="primary" href={row[3]} target="_blank"><OpenInNewIcon/></Link></TableCell>
+                                        {/* <TableCell sx={{ width: '15%' }}>{row[9]}</TableCell>
+                                        <TableCell sx={{ width: '15%' }}>{row[10]}</TableCell>
+                                        <TableCell sx={{ width: '15%' }}>{row[11]}</TableCell>
+                                        <TableCell sx={{ width: '15%' }}>{row[12]}</TableCell> */}
+                                        <TableCell sx={{ width: '15%' }}>{row[13].replaceAll("|", " ")}</TableCell>
                                     </TableRow>
                                 ))}
                                 {emptyRows > 0 && (
