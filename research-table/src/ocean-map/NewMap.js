@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 //import { Tooltip as ReactTooltip } from "react-tooltip";
 import { MapContainer, TileLayer, Polygon, Tooltip, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { Typography } from '@mui/material';
 
 // Ocean polygon definitions (simplified bounding boxes)
 const oceans = [
@@ -127,55 +128,58 @@ const OceanMap = ({ selectedOcean }) => {
     }
 
     return (
-        <div style={{
-            height: '100vh',
-            width: '100vw',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: '#e0e0e0'
-        }}>
+        <div>
+            <div><Typography>Each tooltip shows number of studies done for that ocean. Double click on the tooltip to see studies for that ocean</Typography></div>
             <div style={{
-                width: '90vw',
-                aspectRatio: '2 / 1', // Maintain world map proportions (W:H ≈ 2:1)
-                boxShadow: '0 0 10px rgba(0,0,0,0.2)',
-                borderRadius: '3px',
-                overflow: 'hidden'
+                height: '100vh',
+                width: '100vw',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: '#e0e0e0'
             }}>
-                <MapContainer
-                    center={[0, 0]}
-                    zoom={4}
-                    minZoom={2}
-                    maxZoom={2}
-                    style={{ height: '100%', width: '100%' }}
-                    worldCopyJump={false}
-                    maxBounds={[[-90, -180], [90, 180]]}
-                    maxBoundsViscosity={1.0}
-                >
-                    <TileLayer
-                        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        attribution="© OpenStreetMap contributors"
-                        noWrap={true}
-                    />
+                <div style={{
+                    width: '90vw',
+                    aspectRatio: '2 / 1', // Maintain world map proportions (W:H ≈ 2:1)
+                    boxShadow: '0 0 10px rgba(0,0,0,0.2)',
+                    borderRadius: '3px',
+                    overflow: 'hidden'
+                }}>
+                    <MapContainer
+                        center={[0, 0]}
+                        zoom={4}
+                        minZoom={2}
+                        maxZoom={2}
+                        style={{ height: '100%', width: '100%' }}
+                        worldCopyJump={false}
+                        maxBounds={[[-90, -180], [90, 180]]}
+                        maxBoundsViscosity={1.0}
+                    >
+                        <TileLayer
+                            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            attribution="© OpenStreetMap contributors"
+                            noWrap={true}
+                        />
 
-                    {oceans.map((ocean, index) => (
-                        <Polygon
-                            key={index}
-                            positions={swapCoordinates(ocean.coordinates)}
-                            pathOptions={{ color: ocean.color, fillOpacity: 0.3 }}
-                        // onclick={sortPapersByOcean(ocean.name)}
-                        >
-                            <Tooltip permanent direction="center" interactive={true} style={{ cursor: "pointer" }}>
-                                <span onDoubleClick={sortPapersByOcean(ocean.name)} style={{ cursor: "pointer" }}>
-                                    <strong>{ocean.name} : {ocean.studies}</strong>
-                                    {/* <strong>Studies</strong> */}
-                                </span>
-                            </Tooltip>
-                        </Polygon>
-                    ))}
+                        {oceans.map((ocean, index) => (
+                            <Polygon
+                                key={index}
+                                positions={swapCoordinates(ocean.coordinates)}
+                                pathOptions={{ color: ocean.color, fillOpacity: 0.3 }}
+                            // onclick={sortPapersByOcean(ocean.name)}
+                            >
+                                <Tooltip permanent direction="center" interactive={true} style={{ cursor: "pointer" }}>
+                                    <span onDoubleClick={sortPapersByOcean(ocean.name)} style={{ cursor: "pointer" }}>
+                                        <strong>{ocean.name} : {ocean.studies}</strong>
+                                        {/* <strong>Studies</strong> */}
+                                    </span>
+                                </Tooltip>
+                            </Polygon>
+                        ))}
 
-                    <FitToOceans polygons={oceans} />
-                </MapContainer>
+                        <FitToOceans polygons={oceans} />
+                    </MapContainer>
+                </div>
             </div>
         </div>
     );

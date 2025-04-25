@@ -153,7 +153,7 @@ const ExcelTable = ({ocean}) => {
     const [searchQuery, setSearchQuery] = useState(ocean);
 
     useEffect(() => {
-        const filePath = "research-visualization/mapped_studies.xlsx";
+        const filePath = "research-visualization/mapped_studies.xlsx";//
         fetch(filePath)
             .then(response => response.arrayBuffer())
             .then(buffer => {
