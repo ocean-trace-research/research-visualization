@@ -1,13 +1,9 @@
+import { Tab, Box } from '@mui/material';
+import { TabPanel, TabContext, TabList } from '@mui/lab';
+
 import React from "react";
 
-import { Tab, Tabs, Typography } from '@mui/material';
-import { TabPanel, TabContext, TabList } from '@mui/lab';
-import Box from '@mui/material/Box';
-
-// import OceanMap from "../ocean-map/OceanMap";
-// import WorldMap from "../ocean-map/WorldMap";
-//import WorldMapWithTwoRectangles from "../ocean-map/Map";
-import OceanMap from "../ocean-map/NewMap"
+import OceanMap from "../ocean-map/OceanMap"
 import ExcelTable from "../table/ExcelTable";
 import Overview from "../overview/Overview";
 
@@ -33,9 +29,6 @@ function Home() {
 
         <div className="Home">
             <Box>
-                {/* <Typography variant="h4" sx={{ marginY: "5px", textAlign: "left" }}><a
-                href="https://scor-int.org/group/reducing-uncertainty-in-soluble-aerosol-trace-element-deposition-rusted/" 
-                target="_blank">RUSTED Research Repository</a></Typography> */}
                 <Box sx={{ width: '100%', typography: 'body1' }}>
                     <TabContext value={value}>
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

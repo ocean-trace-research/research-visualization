@@ -1,182 +1,182 @@
-import React, { useEffect, useRef, useState } from "react";
-import * as d3 from "d3";
-import * as topojson from "topojson";
-import { Tooltip as ReactTooltip } from "react-tooltip";
-import { blue } from "@mui/material/colors";
+import { MapContainer, TileLayer, Polygon, Tooltip, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import { Typography } from '@mui/material';
 
-const OceanMap = () => {
-  const svgRef = useRef();
-  const [tooltipContent, setTooltipContent] = useState("");
+import React from "react";
 
-  useEffect(() => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+// Ocean polygon definitions (simplified bounding boxes)
+const oceans = [
+    {
+        name: "Central East Pacific",//Ocean
+        coordinates: [[[-180, 30], [-180, -15], [-75, -15], [-75, 5], [-112, 30], [-180, 30]]],
+        color: "#CC79A7",
+        studies: 9
+    },
+    {
+        name: "Central West Pacific",// Ocean
+        coordinates: [[[180, 30], [180, -15], [110, -15], [110, 30], [180, 30]]],
+        color: "#CC79A7",
+        studies: 10
+    },
+    {
+        name: "Western North Pacific",// Ocean
+        coordinates: [[[120, 60], [120, 30], [180, 30], [180, 60], [120, 60]]],
+        color: "#332288",
+        studies: 10
+    },
+    {
+        name: "Australia Pacific",// Ocean
+        coordinates: [[[110, -15], [110, -50], [180, -50], [180, -15], [110, -15]]],
+        color: "#F3BC00",
+        studies: 9
+    },
+    {
+        name: "South Pacific",// Ocean
+        coordinates: [[[-180, -15], [-180, -50], [-70, -50], [-70, -15], [-180, -15]]],
+        color: "#F0E442",
+        studies: 5
+    },
+    {
+        name: "Eastern North Pacific",// Ocean
+        coordinates: [[[-180, 60], [-180, 30], [-90, 30], [-90, 60], [-180, 60]]],
+        color: "#F3BC00",
+        studies: 5
+    },
+    {
+        name: "North Atlantic",// Ocean
+        coordinates: [[[-90, 60], [-90, 30], [-5, 30], [-5, 40], [0, 40], [0, 60], [-90, 60]]],
+        color: "yellow",
+        studies: 11
+    },
+    {
+        name: "Central Atlantic",// Ocean
+        coordinates: [[[-112, 30], [-75, 5], [-75, -15], [20, -15], [20, 30], [-112, 30]]],
+        color: "#51bb57",
+        studies: 21
+    },
+    {
+        name: "South Atlantic",// Ocean
+        coordinates: [[[-70, -15], [-70, -50], [20, -50], [20, -15], [-70, -15]]],
+        color: "#009E73",
+        studies: 11
+    },
+    {
+        name: "Medeterranian, Black and Caspian Sea",// Ocean
+        coordinates: [[[-5, 30], [-5, 40], [0, 40], [0, 50], [60, 50], [60, 30], [-5, 30]]],
+        color: "#000000",
+        studies: 15
+    },
+    {
+        name: "Bay of Bengal",
+        coordinates: [[[80, 30], [80, 0], [110, 0], [110, 30], [80, 30]]],
+        color: "#000000",
+        studies: 4
+    },
+    {
+        name: "Arabian Sea",
+        coordinates: [[[20, 30], [20, 0], [80, 0], [80, 30], [20, 30]]],
+        color: "#E69F00",
+        studies: 6
+    },
+    {
+        name: "Indian Ocean",
+        coordinates: [[[20, 0], [20, -50], [110, -50], [110, 0], [20, 0]]],
+        color: "#56B4E9",
+        studies: 7
+    },
+    {
+        name: "Southern Ocean",
+        coordinates: [[[-180, -50], [-180, -90], [180, -90], [180, -50], [-180, -50]]],
+        color: "#D55E00",
+        studies: 6
+    },
+    {
+        name: "Arctic Ocean",
+        coordinates: [[[-180, 90], [-180, 60], [180, 60], [180, 90], [-180, 90]]],
+        color: "#0072B2",
+        studies: 7
+    }
+];
 
-    const svg = d3.select(svgRef.current)
-      .attr("width", width)
-      .attr("height", height)
-      .style("border", "1px solid #ccc");
+// Swap [lng, lat] → [lat, lng]
+const swapCoordinates = coords =>
+    coords.map(polygon => polygon.map(([lng, lat]) => [lat, lng]));
 
-    const projection = d3.geoNaturalEarth1()
-      .scale(180)
-      .translate([width / 2, height / 2]);
+// Fit to oceans
+const FitToOceans = ({ polygons }) => {
+    const map = useMap();
+    const allCoords = polygons.flatMap(p => p.coordinates[0]);
 
-    const path = d3.geoPath().projection(projection);
-
-    // Load TopoJSON world map
-    d3.json("https://unpkg.com/world-atlas@1.1.4/world/110m.json").then((world) => {
-      const countries = topojson.feature(world, world.objects.countries).features;
-
-      // Draw the countries
-      svg.selectAll(".country")
-        .data(countries)
-        .enter()
-        .append("path")
-        .attr("class", "country")
-        .attr("d", path)
-        .attr("fill", "#b8b8b8")
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 0.5)
-      // .on("mouseover", (event, d) => {
-      //   d3.select(event.target).attr("fill", "#3182bd");
-      //   setTooltipContent(`Country ID: ${d.id}`);
-      // })
-      // .on("mouseout", (event) => {
-      //   d3.select(event.target).attr("fill", "#b8b8b8");
-      //   setTooltipContent("");
-      // })
-      // .on("click", (event, d) => {
-      //   alert(`Clicked on Country ID: ${d.id}`);
-      // });
-
-      // const graticule = d3.geoGraticule();
-      // svg.append("path")
-      //   .datum(graticule())
-      //   .attr("d", path)
-      //   .attr("fill", "none")
-      //   .attr("stroke", "#ccc")
-      //   .attr("stroke-width", 0.5);
-
-      // Draw oceans with labels
-      const oceans = {
-        "type": "FeatureCollection",
-        "features": [
-          {
-            "type": "Feature", "properties": { "name": "Central Pacific Ocean (CPAO)" },
-            "geometry": { "type": "Polygon", "coordinates": [[[30, -210], [-15, -210], [-15, -70], [30, -70]]] }
-          },
-          {
-            "type": "Feature", "properties": { "name": "Australia/South Pacific Ocean" },
-            "geometry": { "type": "Polygon", "coordinates": [[[-15, 110], [-50, 300], [-50, 300], [-15, 110]]] }
-          },
-          {
-            "type": "Feature", "properties": { "name": "Eastern North Pacific Ocean" },
-            "geometry": { "type": "Polygon", "coordinates": [[[60, 150], [30, 150], [30, 180], [60, 180]]] }
-          },
-          {
-            "type": "Feature", "properties": { "name": "Western North Pacific Ocean" },
-            "geometry": { "type": "Polygon", "coordinates": [[[60, 180], [30, 180], [30, 270], [60, 270]]] }
-          },
-          {
-            "type": "Feature", "properties": { "name": "North Atlantic Ocean" },
-            "geometry": { "type": "Polygon", "coordinates": [[[60, -90], [30, -90], [30, 110], [60, 110]]] }
-          },
-          {
-            "type": "Feature", "properties": { "name": "Central Atlantic Ocean" },
-            "geometry": { "type": "Polygon", "coordinates": [[[30, -70], [-15, -70], [-15, 30], [30, 30]]] }
-          },
-          {
-            "type": "Feature", "properties": { "name": "South Atlantic Ocean" },
-            "geometry": { "type": "Polygon", "coordinates": [[[15, -60], [-50, -60], [-50, 30], [15, 30]]] }
-          },
-          {
-            "type": "Feature", "properties": { "name": "Bay of Bengal" },
-            "geometry": { "type": "Polygon", "coordinates": [[[80, 30], [80, -20], [110, -20], [80, 30]]] }
-          },
-          {
-            "type": "Feature", "properties": { "name": "Arabian Sea" },
-            "geometry": { "type": "Polygon", "coordinates": [[[30, 30], [30, -20], [80, -20], [80, 30]]] }
-          },
-          {
-            "type": "Feature", "properties": { "name": "Indian Ocean" },
-            "geometry": { "type": "Polygon", "coordinates": [[[30, -20], [30, -50], [110, -50], [110, -20]]] }
-          },
-          {
-            "type": "Feature", "properties": { "name": "Southern Ocean" },
-            "geometry": { "type": "Polygon", "coordinates": [[[-50, 0], [-90, 0], [-90, 360], [-50, 360]]] }
-          },
-          {
-            "type": "Feature", "properties": 
-            { "name": "Arctic Ocean" },
-            "geometry": { "type": "Polygon", 
-              "coordinates": [[[0, 90], [0, 60], [360, 60], [360, 90]]] 
-            }
-          },
-        ]
-      }
-
-      // const oceans = [
-      //   { name: "Central Pacific Ocean (CPAO)", coords: [[30, -210], [-15, -210], [-15, -70], [30, -70]], color: "#b1d38e", label: [-150, 10] },
-      //   { name: "Australia/South Pacific Ocean", coords: [[-15, 110], [-50, 300], [-50, 300], [-15, 110]], color: "#b3b3b3", label: [-175, 25] },
-      //   { name: "Eastern North Pacific Ocean", coords: [[60, 150], [30, 150], [30, 180], [60, 180]], color: "#e1cf9c", label: [150, 60] },
-      //   { name: "Western North Pacific Ocean", coords: [[60, 180], [30, 180], [30, 270], [60, 270]], color: "#fde8a5", label: [180, 60] },
-      //   { name: "North Atlantic Ocean", coords: [[60, -90], [30, -90], [30, 110], [60, 110]], color: "#b9b7d8", label: [-90, 60] },
-      //   { name: "Central Atlantic Ocean", coords: [[30, -70], [-15, -70], [-15, 30], [30, 30]], color: "#b9b7d8", label: [-70, 30] },
-      //   { name: "South Atlantic Ocean", coords: [[15, -60], [-50, -60], [-50, 30], [15, 30]], color: "#ef94be", label: [-60, 15] },
-      //   { name: "Bay of Bengal", coords: [[80, 30], [80, -50], [110, -50], [80, 30]], color: "#94a7c9", label: [80, 15] },
-      //   { name: "Arabian Sea", coords: [[30, 30], [30, -50], [80, -50], [80, 30]], color: "#ecaf7f", label: [30, 10] },
-      //   { name: "Southern Ocean", coords: [[-50, 0], [-90, 0], [-90, 360], [-50, 360]], color: "#eff3ff", label: [0, -50] },
-      //   { name: "Arctic Ocean", coords: [[0, 90], [0, 60], [360, 60], [360, 90]], color: "#8ebbda", label: [0, 90] }
-      // ];      
-
-      svg.selectAll("path")
-        .data(oceans.features)
-        //.enter()
-        .append("path")
-        //.attr("class", "ocean")
-        .attr("d", path)
-        .attr("fill", "#b8b8b8")
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 0.5)
-
-      oceans.forEach(ocean => {
-        //ocean.coords.forEach((polygonCoords) => {
-        const oceanPolygon = {
-          type: "Feature",
-          geometry: {
-            type: "Polygon",
-            coordinates: [ocean.coords]
-          }
-        }
-
-        svg.append("path")
-          .attr('class', ocean.name)
-          .datum(oceanPolygon)
-          .attr("d", path)
-          .attr("fill", ocean.color)
-          .attr("opacity", 0.75)
-          .attr("stroke", "#08306b")        // Border color
-          .attr("stroke-width", 1.5);       // Border width
-        //Add ocean labels
-        const [x, y] = projection(ocean.label);
-        svg.append("text")
-          .attr("x", x)
-          .attr("y", y)
-          .attr("text-anchor", "middle")
-          .style("fill", "#08306b")
-          .style("font-size", "18px")
-          .style("font-weight", "bold")
-          .text(ocean.name);
-      });
+    map.fitBounds(allCoords, {
+        padding: [20, 20],
+        maxZoom: 3,
     });
-  }, []);
 
-  return (
-    <div>
-      <svg ref={svgRef}></svg>
-      <ReactTooltip>{tooltipContent}</ReactTooltip>
-    </div>
-  );
+    return null;
+};
+
+const OceanMap = ({ selectedOcean }) => {
+
+    const sortPapersByOcean = oceanName => event => {
+        if (oceanName != "") {
+            selectedOcean(oceanName)
+        }
+    }
+
+    return (
+        <div>
+            <div><Typography style={{ fontWeight: "bold" }}>Each tooltip shows number of studies done for that ocean. Double click on the tooltip to see studies for that ocean</Typography></div>
+            <div style={{
+                height: '100vh',
+                width: '100vw',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: '#e0e0e0'
+            }}>
+                <div style={{
+                    width: '90vw',
+                    aspectRatio: '2 / 1', // Maintain world map proportions (W:H ≈ 2:1)
+                    boxShadow: '0 0 10px rgba(0,0,0,0.2)',
+                    borderRadius: '3px',
+                    overflow: 'hidden'
+                }}>
+                    <MapContainer
+                        center={[0, 0]}
+                        zoom={4}
+                        minZoom={2}
+                        maxZoom={2}
+                        style={{ height: '100%', width: '100%' }}
+                        worldCopyJump={false}
+                        maxBounds={[[-90, -180], [90, 180]]}
+                        maxBoundsViscosity={1.0}
+                    >
+                        <TileLayer
+                            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            attribution="© OpenStreetMap contributors"
+                            noWrap={true}
+                        />
+
+                        {oceans.map((ocean, index) => (
+                            <Polygon
+                                key={index}
+                                positions={swapCoordinates(ocean.coordinates)}
+                                pathOptions={{ color: ocean.color, fillOpacity: 0.3 }}
+                            >
+                                <Tooltip permanent direction="center" interactive={true} style={{ cursor: "pointer" }}>
+                                    <span onDoubleClick={sortPapersByOcean(ocean.name)} style={{ cursor: "pointer" }}>
+                                        <strong>{ocean.name} : {ocean.studies}</strong>
+                                    </span>
+                                </Tooltip>
+                            </Polygon>
+                        ))}
+
+                        <FitToOceans polygons={oceans} />
+                    </MapContainer>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default OceanMap;

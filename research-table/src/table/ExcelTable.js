@@ -1,27 +1,16 @@
-import React, { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
-import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableFooter from '@mui/material/TableFooter';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Link from '@mui/material/Link';
-import IconButton from '@mui/material/IconButton';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import LastPageIcon from '@mui/icons-material/LastPage';
-import PropTypes from 'prop-types';
-import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import { visuallyHidden } from '@mui/utils';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableFooter, TableSortLabel  } from '@mui/material';
+import { Paper, TextField, Link, IconButton, Box } from '@mui/material'
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
+import LastPageIcon from '@mui/icons-material/LastPage'
+import FirstPageIcon from '@mui/icons-material/FirstPage'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import PropTypes from 'prop-types'
+import { useTheme } from '@mui/material/styles'
+import { visuallyHidden } from '@mui/utils'
+
+import React, { useState, useEffect } from "react";
 
 
 function descendingComparator(a, b, orderBy) {
@@ -234,11 +223,7 @@ const ExcelTable = ({ocean}) => {
                                         <TableCell sx={{ width: '15%' }}><Link color="primary" href={row[4]} target="_blank">{row[0]}</Link></TableCell>
                                         <TableCell sx={{ width: '5%' }}>{row[1]}</TableCell>
                                         <TableCell sx={{ width: '55%' }}>{row[2]}</TableCell>
-                                        <TableCell sx={{ width: '5%' }}><Link color="primary" href={row[3]} target="_blank"><OpenInNewIcon/></Link></TableCell>
-                                        {/* <TableCell sx={{ width: '15%' }}>{row[9]}</TableCell>
-                                        <TableCell sx={{ width: '15%' }}>{row[10]}</TableCell>
-                                        <TableCell sx={{ width: '15%' }}>{row[11]}</TableCell>
-                                        <TableCell sx={{ width: '15%' }}>{row[12]}</TableCell> */}
+                                        <TableCell sx={{ width: '5%' }}><Link color="primary" href={row[3]} target="_blank"><OpenInNewIcon/></Link></TableCell>                                        
                                         <TableCell sx={{ width: '15%' }}>{row[13].replaceAll("|", " ")}</TableCell>
                                     </TableRow>
                                 ))}
