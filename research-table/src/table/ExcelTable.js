@@ -141,8 +141,8 @@ const ExcelTable = ({ocean}) => {
     const [orderBy, setOrderBy] = React.useState(1);
     const [searchQuery, setSearchQuery] = useState(ocean);
 
-    useEffect(() => {
-        const filePath = "research-visualization/mapped_studies.xlsx";//
+    useEffect(() => { 
+        const filePath = process.env.PUBLIC_URL + "/mapped_studies.xlsx";//research-visualization
         fetch(filePath)
             .then(response => response.arrayBuffer())
             .then(buffer => {
@@ -220,7 +220,7 @@ const ExcelTable = ({ocean}) => {
                             <TableBody>
                                 {(rowsPerPage > 0 ? visibleRows : filteredData).map((row, index) => (
                                     <TableRow key={index}>
-                                        <TableCell sx={{ width: '15%' }}><Link color="primary" href={row[4]} target="_blank">{row[0]}</Link></TableCell>
+                                        <TableCell sx={{ width: '15%' }}><Link color="primary" href={row[3]} target="_blank">{row[0]}</Link></TableCell>
                                         <TableCell sx={{ width: '5%' }}>{row[1]}</TableCell>
                                         <TableCell sx={{ width: '55%' }}>{row[2]}</TableCell>
                                         <TableCell sx={{ width: '5%' }}><Link color="primary" href={row[3]} target="_blank"><OpenInNewIcon/></Link></TableCell>                                        
