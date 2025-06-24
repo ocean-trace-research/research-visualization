@@ -224,7 +224,7 @@ const ExcelTable = ({ocean}) => {
                                         <TableCell sx={{ width: '5%' }}>{row[1]}</TableCell>
                                         <TableCell sx={{ width: '55%' }}>{row[2]}</TableCell>
                                         <TableCell sx={{ width: '5%' }}><Link color="primary" href={row[3]} target="_blank"><OpenInNewIcon/></Link></TableCell>                                        
-                                        <TableCell sx={{ width: '15%' }}>{row[13].replaceAll("|", " ")}</TableCell>
+                                        <TableCell sx={{ width: '15%' }}>{row[13]?.replaceAll("|", " ")??""}</TableCell>
                                     </TableRow>
                                 ))}
                                 {emptyRows > 0 && (

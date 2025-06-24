@@ -12,6 +12,7 @@ function Home() {
     const [ocean, setOcean] = React.useState("");
 
     const handleChange = (event, newValue) => {
+        setOcean("")
         setValue(newValue);
     };
 
@@ -20,9 +21,9 @@ function Home() {
         setValue("2")
     }
     const selectedOcean = (selectedOcean) => {
-        if (selectedOcean != "") {
+        // if (selectedOcean != "") {
             openResearchTable(selectedOcean)
-        }
+        // }
     }
 
     return (
@@ -43,7 +44,7 @@ function Home() {
                         </Box>
                         <TabPanel value="1"></TabPanel>
                         <TabPanel value="2"><ExcelTable ocean={ocean} /></TabPanel>
-                        <TabPanel value="3">< OceanMap selectedOcean={selectedOcean} /></TabPanel>
+                        <TabPanel value="3"><OceanMap selectedOcean={selectedOcean} /></TabPanel>
                         <TabPanel value="4"></TabPanel>
                         <TabPanel value="5"></TabPanel>
                         <TabPanel value="6"><Overview /></TabPanel>

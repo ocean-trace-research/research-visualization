@@ -99,8 +99,8 @@ const oceans = [
 ];
 
 // Swap [lng, lat] → [lat, lng]
-const swapCoordinates = coords =>
-    coords.map(polygon => polygon.map(([lng, lat]) => [lat, lng]));
+// const swapCoordinates = coords =>
+//     coords.map(polygon => polygon.map(([lng, lat]) => [lat, lng]));
 
 // Fit to oceans
 const FitToOceans = ({ polygons }) => {
@@ -133,9 +133,9 @@ const OceanMap = ({ selectedOcean }) => {
     const [traceElements, setTraceElements] = useState(traceElementsList)
 
     const sortPapersByOcean = oceanName => event => {
-        if (oceanName != "") {
+        // if (oceanName != "") {
             selectedOcean(oceanName)
-        }
+        // }
     }
 
     const filterStudies = (traceElements) => {
