@@ -1,11 +1,9 @@
-import * as XLSX from "xlsx";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableFooter, TableSortLabel  } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableFooter, TableSortLabel, Button } from '@mui/material';
 import { Paper, TextField, Link, IconButton, Box } from '@mui/material'
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft'
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
 import LastPageIcon from '@mui/icons-material/LastPage'
 import FirstPageIcon from '@mui/icons-material/FirstPage'
-import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import PropTypes from 'prop-types'
 import { useTheme } from '@mui/material/styles'
 import { visuallyHidden } from '@mui/utils'
@@ -42,15 +40,15 @@ function EnhancedTableHead(props) {
                 {headCells.map((headCell, index) => (
                     <TableCell
                         key={headCell}
-                        sortDirection={orderBy === index ? order : false}
+                        sortDirection={orderBy === headCell ? order : false}
                     >
                         <TableSortLabel
-                            active={orderBy === index}
-                            direction={orderBy === index ? order : 'asc'}
-                            onClick={createSortHandler(index)}
+                            active={orderBy === headCell}
+                            direction={orderBy === headCell ? order : 'asc'}
+                            onClick={createSortHandler(headCell)}
                         >
                             {headCell}
-                            {orderBy === index ? (
+                            {orderBy === headCell ? (
                                 <Box component="span" sx={visuallyHidden}>
                                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                                 </Box>
@@ -132,30 +130,25 @@ TablePaginationActions.propTypes = {
     rowsPerPage: PropTypes.number.isRequired,
 };
 
-const ExcelTable = ({ocean}) => {
+const ExcelTable = ({ showFullData, researchData }) => {
     const [headData, setHeadData] = useState([]);
     const [rowData, setRowData] = useState([]);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
-    const [order, setOrder] = React.useState('desc');
-    const [orderBy, setOrderBy] = React.useState(1);
-    const [searchQuery, setSearchQuery] = useState(ocean);
+    const [order, setOrder] = React.useState('asc');
+    const [orderBy, setOrderBy] = React.useState("References");
+    const [searchQuery, setSearchQuery] = useState("");
 
-    useEffect(() => { 
-        const filePath = process.env.PUBLIC_URL + "/mapped_studies.xlsx";//research-visualization
-        fetch(filePath)
-            .then(response => response.arrayBuffer())
-            .then(buffer => {
-                const workbook = XLSX.read(buffer, { type: "array" });
-                const sheetName = workbook.SheetNames[0];
-                const sheet = workbook.Sheets[sheetName];
-                const parsedData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                parsedData[0].splice(4, 9)
-                setHeadData(parsedData[0]);
-                setRowData(parsedData.slice(1))
-            })
-            .catch(error => console.error("Error loading Excel file:", error));
-    }, []);
+    useEffect(() => {
+        if (researchData && researchData.length > 0) {
+            let header = Object.keys(researchData[0]).slice(0, 17)
+            header.splice(14, 1)
+            header.splice(10, 2)
+            header.splice(3, 6)
+            setHeadData(header);
+            setRowData(researchData)
+        }
+    }, [researchData])
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -193,7 +186,11 @@ const ExcelTable = ({ocean}) => {
     const handleChangeSearchQuery = (event) => {
         if (event.target.value.length <= 100) {
             setSearchQuery(event.target.value)
-        }        
+        }
+    }
+
+    const handleShowAllClick = () => {
+        showFullData(true)
     }
 
     return (
@@ -203,10 +200,11 @@ const ExcelTable = ({ocean}) => {
                     <TextField
                         label="Search Papers"
                         variant="outlined"
-                        defaultValue={ocean}
+                        defaultValue={""}
                         onChange={handleChangeSearchQuery}
-                        style={{ align: "left", marginLeft:"10px", float:"left", marginTop: "10px", marginBottom: "10px", width:"400px" }}
+                        style={{ align: "left", marginLeft: "10px", float: "left", marginTop: "10px", marginBottom: "10px", width: "500px" }}
                     />
+                    <Button style={{ marginTop: "20px" }} onClick={() => handleShowAllClick()}>Show All Studies</Button>
                     {filteredData.length > 0 && (
                         <Table stickyHeader aria-label="sticky custom pagination table">
                             <caption>A table with research papers related to trace elements in ocean</caption>
@@ -220,11 +218,15 @@ const ExcelTable = ({ocean}) => {
                             <TableBody>
                                 {(rowsPerPage > 0 ? visibleRows : filteredData).map((row, index) => (
                                     <TableRow key={index}>
-                                        <TableCell sx={{ width: '15%' }}><Link color="primary" href={row[3]} target="_blank">{row[0]}</Link></TableCell>
-                                        <TableCell sx={{ width: '5%' }}>{row[1]}</TableCell>
-                                        <TableCell sx={{ width: '55%' }}>{row[2]}</TableCell>
-                                        <TableCell sx={{ width: '5%' }}><Link color="primary" href={row[3]} target="_blank"><OpenInNewIcon/></Link></TableCell>                                        
-                                        <TableCell sx={{ width: '15%' }}>{row[13]?.replaceAll("|", " ")??""}</TableCell>
+                                        <TableCell sx={{ width: '15%' }}><Link color="primary" href={row["DOI"]} target="_blank">{row["References"]}</Link></TableCell>
+                                        <TableCell sx={{ width: '5%' }}>{row["Year"]}</TableCell>
+                                        <TableCell sx={{ width: '35%' }}>{row["Title"]}</TableCell>
+                                        {/* <TableCell sx={{ width: '5%' }}><Link color="primary" href={row[3]} target="_blank"><OpenInNewIcon/></Link></TableCell>                                         */}
+                                        <TableCell sx={{ width: '15%' }}>{row["Ocean"]?.replaceAll("|", " ") ?? ""}</TableCell>
+                                        <TableCell sx={{ width: '15%' }}>{row["Elements"]?.replaceAll(",", ", ") ?? ""}</TableCell>
+                                        <TableCell sx={{ width: '5%' }}>{row["Major Ions (MI)"] == 1 ? "Yes" : ""}</TableCell>
+                                        <TableCell sx={{ width: '5%' }}>{row["Solubility"]}</TableCell>
+                                        <TableCell sx={{ width: '10%' }}>{row["Methodology"]}</TableCell>
                                     </TableRow>
                                 ))}
                                 {emptyRows > 0 && (
