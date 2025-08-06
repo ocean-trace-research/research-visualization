@@ -5,6 +5,7 @@ function Overview() {
     const links = [
         {
             type: "Programs",
+            active: true,
             collection: [
                 {
                     url: "https://oceandecade.org/",
@@ -32,6 +33,7 @@ function Overview() {
         },
         {
             type: "Research Groups",
+            active: true,
             collection:
                 [
                     {
@@ -51,6 +53,7 @@ function Overview() {
         },
         {
             type: "Methodologies",
+            active: true,
             collection:
                 [
                     {
@@ -62,7 +65,29 @@ function Overview() {
                 ]
         },
         {
+            type: "Datasets",
+            active: true,
+            collection:
+                [
+                    {
+                        url: "https://www.bodc.ac.uk/geotraces/data/historical/",
+                        title: "Historical TEI Data",
+                        description: `Links to relevant historical data sets collected outside of the GEOTRACES programme.  
+                        This data has, in general, not been quality-controlled or intercalibrated according to GEOTRACES protocols and is typically compiled from literature sources.`,
+                        active: true
+                    },
+                    {
+                        url: "https://www.bco-dmo.org/search/dataset?query=%7E%27Trace*20element",
+                        title: "BCODMO Trace Element Datasets",
+                        description: `A repository funded by the National Science Foundation (NSF), supporting the oceanographic research community's data needs throughout the entire data life cycle.
+                        This link has collection of trace element datasets hosted by the Biological and Chemical Oceanography Data Management Office.`,
+                        active: true
+                    },
+                ]
+        },
+        {
             type: "Journals",
+            active: true,
             collection:
                 [
                     {
@@ -122,31 +147,33 @@ function Overview() {
     return (
         <div className="Overview">
             {links.map((group) => {
-                return (
-                    <Box sx={{ flexGrow: 1 }}  key={group.type}>
-                        <Grid size="grow">
-                            <Typography sx={{ marginLeft: "10px", textAlign: "left" }} variant="h6">{group.type}</Typography>
-                            <List>
-                                {group.collection.map((link) => {
-                                    if (link.active) {
-                                        return (
-                                            <ListItem key={link.title}>
-                                                <Grid container sx={{width: "100%" }} size={{ desktop: 12, mobile: 12 }}>
-                                                    <Grid size={{ sm: 3, xs: 12, md: 3 }}>
-                                                        <Link href={link.url}
-                                                            target="_blank">{link.title}:</Link>
+                if (group.active) {
+                    return (
+                        <Box sx={{ flexGrow: 1 }} key={group.type}>
+                            <Grid size="grow">
+                                <Typography sx={{ marginLeft: "10px", textAlign: "left" }} variant="h6">{group.type}</Typography>
+                                <List>
+                                    {group.collection.map((link) => {
+                                        if (link.active) {
+                                            return (
+                                                <ListItem key={link.title}>
+                                                    <Grid container sx={{ width: "100%" }} size={{ desktop: 12, mobile: 12 }}>
+                                                        <Grid size={{ sm: 3, xs: 12, md: 3 }}>
+                                                            <Link href={link.url}
+                                                                target="_blank">{link.title}:</Link>
+                                                        </Grid>
+                                                        <Grid size={{ sm: 8, xs: 12, md: 8 }}>
+                                                            <Typography sx={{ marginLeft: "10px" }} variant="body1">{link.description}</Typography>
+                                                        </Grid>
                                                     </Grid>
-                                                    <Grid size={{ sm: 8, xs: 12, md: 8 }}>
-                                                        <Typography sx={{ marginLeft: "10px" }} variant="body1">{link.description}</Typography>
-                                                    </Grid>
-                                                </Grid>
-                                            </ListItem>
-                                        )
-                                    }
-                                })}
-                            </List>
-                        </Grid>
-                    </Box>)
+                                                </ListItem>
+                                            )
+                                        }
+                                    })}
+                                </List>
+                            </Grid>
+                        </Box>)
+                }
             })}
         </div>
     );

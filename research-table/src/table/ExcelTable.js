@@ -220,11 +220,11 @@ const ExcelTable = ({ showFullData, researchData }) => {
                                     <TableRow key={index}>
                                         <TableCell sx={{ width: '15%' }}><Link color="primary" href={row["DOI"]} target="_blank">{row["References"]}</Link></TableCell>
                                         <TableCell sx={{ width: '5%' }}>{row["Year"]}</TableCell>
-                                        <TableCell sx={{ width: '35%' }}>{row["Title"]}</TableCell>
+                                        <TableCell sx={{ width: '30%' }}>{row["Title"]}</TableCell>
                                         {/* <TableCell sx={{ width: '5%' }}><Link color="primary" href={row[3]} target="_blank"><OpenInNewIcon/></Link></TableCell>                                         */}
                                         <TableCell sx={{ width: '15%' }}>{row["Ocean"]?.replaceAll("|", " ") ?? ""}</TableCell>
                                         <TableCell sx={{ width: '15%' }}>{row["Elements"]?.replaceAll(",", ", ") ?? ""}</TableCell>
-                                        <TableCell sx={{ width: '5%' }}>{row["Major Ions (MI)"] == 1 ? "Yes" : ""}</TableCell>
+                                        <TableCell sx={{ width: '10%' }}>{row["Major Ions (MI)"] == 1 ? "Yes" : ""}</TableCell>
                                         <TableCell sx={{ width: '5%' }}>{row["Solubility"]}</TableCell>
                                         <TableCell sx={{ width: '10%' }}>{row["Methodology"]}</TableCell>
                                     </TableRow>
