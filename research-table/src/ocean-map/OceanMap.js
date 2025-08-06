@@ -181,6 +181,7 @@ const FitToOceans = ({ polygons }) => {
 const OceanMap = ({ selectedResearch, researchData }) => {
     const [hideElements, setHideElements] = useState(false);
     const [showLabel, setShowLabel] = useState("Show More Elements");
+
     useEffect(() => {
         setShowLabel(hideElements ? "Show Less Elements" : "Show More Elements")
     }, [hideElements]);
@@ -188,19 +189,10 @@ const OceanMap = ({ selectedResearch, researchData }) => {
     const [oceanData, setOceanData] = useState([]);
     const [checkedElements, setCheckedElements] = useState([]);
     const [allStudies, setAllStudies] = useState(false);
-    useEffect(() => {
-        //setOceanData(researchData)
-        setAllStudies(false)
-    }, [researchData]);
 
-    // function classifyByOceans() {
-    //     oceans.forEach(function (ocean) {
-    //         ocean.studies = oceanData.filter(x => x["Ocean"] != undefined ? x["Ocean"].includes(ocean.name) : false).length
-    //     });
-    // }
-    // useEffect(() => {
-    //     classifyByOceans()
-    // }, [oceanData]);    
+    useEffect(() => {
+        setAllStudies(false)
+    }, [researchData]); 
 
     useEffect(() => {
         elements.forEach(element => {
@@ -213,7 +205,6 @@ const OceanMap = ({ selectedResearch, researchData }) => {
             })
         })
         setCheckedElements(allStudies ? elements : [])
-        //setOceanData(allStudies ? researchData : [])
     }, [allStudies]);
 
     useEffect(() => {
@@ -315,7 +306,8 @@ const OceanMap = ({ selectedResearch, researchData }) => {
                 width: '100vw'
             }}>
                 <div style={{
-                    width: '100vw'
+                    width: '20vw',
+                    overflowY: 'scroll'
                 }}>
                     <FormGroup>
                         <FormControlLabel control={<Checkbox checked={allStudies} onChange={() => setAllStudies(!allStudies)} />} label="Select All" />
@@ -361,7 +353,7 @@ const OceanMap = ({ selectedResearch, researchData }) => {
                     <Button sx={{ align: "left", marginTop: "10px", marginBottom: "20px" }} onClick={() => setHideElements(!hideElements)}>{showLabel}</Button>
                 </div>
                 <div style={{
-                    width: '100vw',
+                    width: '80vw',
                     aspectRatio: '1.75 / 1', // Maintain world map proportions (W:H ≈ 2:1)
                     boxShadow: '0 0 10px rgba(0,0,0,0.2)',
                     borderRadius: '3px',

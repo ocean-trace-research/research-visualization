@@ -12,7 +12,6 @@ function Home() {
     const [oceanData, setOceanData] = React.useState([]);
     const [value, setValue] = React.useState("3");
     const [ocean, setOcean] = React.useState("");
-    //const [checkboxData, setCheckboxData] = React.useState([]);
 
     const handleChange = (event, newValue) => {
         setOcean("")
@@ -34,7 +33,7 @@ function Home() {
     }
 
     useEffect(() => {
-        const filePath = process.env.PUBLIC_URL + "/mapped_studies_new.xlsx";//research-visualization
+        const filePath = process.env.PUBLIC_URL + "/mapped_studies_new.xlsx";
         fetch(filePath)
             .then(response => response.arrayBuffer())
             .then(buffer => {
@@ -42,9 +41,6 @@ function Home() {
                 const sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
                 const parsedData = XLSX.utils.sheet_to_json(sheet)
-                //const headerData = XLSX.utils.sheet_to_json(sheet, {header: 1})[0]
-                //headerData.splice(0,13)
-                //setCheckboxData(headerData)
                 setResearchData(parsedData)
                 setOceanData(parsedData)
             })
@@ -65,13 +61,11 @@ function Home() {
                                 {/* <Tab label="Methodology" value="4" /> */}
                                 {/* <Tab label="Diversity" value="5" /> */}
                                 <Tab label="Important Links" value="6" />
-                                {/* <Tab label="Feedback" value="7" href='https://agupubs.onlinelibrary.wiley.com/journal/19448007' target='_blank'/> */}
                             </TabList>
                         </Box>
                         {/* <TabPanel value="1"></TabPanel> */}
                         <TabPanel value="2"><ExcelTable showFullData={showFullData} researchData={oceanData} /></TabPanel>
                         <TabPanel value="3"><OceanMap selectedResearch={selectedResearch} researchData={researchData} /></TabPanel>
-                        {/* oceanData={oceanData} checkboxData={checkboxData}*/}
                         {/* <TabPanel value="4"></TabPanel> */}
                         {/* <TabPanel value="5"></TabPanel> */}
                         <TabPanel value="6"><Overview /></TabPanel>
