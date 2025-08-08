@@ -8,10 +8,11 @@ import ExcelTable from "../table/ExcelTable";
 import Overview from "../overview/Overview";
 
 function Home() {
-    const [researchData, setResearchData] = React.useState([]);
-    const [oceanData, setOceanData] = React.useState([]);
-    const [value, setValue] = React.useState("2");
-    const [ocean, setOcean] = React.useState("");
+    const [researchData, setResearchData] = useState([]);
+    const [oceanData, setOceanData] = useState([]);
+    const [activeTab, setActiveTab] = useState("2");
+    const [ocean, setOcean] = useState("");
+    const[checkedElements, setCheckedElements] = useState([])
 
     //Fetch data from excel file
     useEffect(() => {
@@ -29,17 +30,13 @@ function Home() {
             .catch(error => console.error("Error loading Excel file:", error));
     }, []);
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
-
     //display data from selected ocean and elements
     const selectedResearch = (selectedResearch) => {
         openResearchTable(selectedResearch)
     }
     const openResearchTable = (selectedResearch) => {
         setOceanData(selectedResearch)
-        setValue("3")
+        setActiveTab("3")
     }
 
     //show all data on table
@@ -48,15 +45,23 @@ function Home() {
             openResearchTable(researchData)
         }
     }
+    
+    const handleTabChange = (event, newValue) => {
+        setActiveTab(newValue);
+    };
+
+    const getCheckedElements = (elementList) => {
+        setCheckedElements(elementList)
+    }
 
     return (
 
         <div className="Home">
             <Box>
                 <Box sx={{ width: '100%', typography: 'body1' }}>
-                    <TabContext value={value}>
+                    <TabContext value={activeTab}>
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                            <TabList onChange={handleChange} aria-label="lab API tabs example">
+                            <TabList onChange={handleTabChange} aria-label="lab API tabs example">
                                 {/* <Tab label="Introduction" value="1" /> */}
                                 <Tab label="Ocean Map" value="2" />
                                 <Tab label="Research Table" value="3" />
@@ -66,7 +71,7 @@ function Home() {
                             </TabList>
                         </Box>
                         {/* <TabPanel value="1"></TabPanel> */}
-                        <TabPanel value="2"><OceanMap selectedResearch={selectedResearch} researchData={researchData} /></TabPanel>
+                        <TabPanel value="2"><OceanMap selectedResearch={selectedResearch} researchData={researchData} storedElementList={checkedElements} beforeUnmount={getCheckedElements}/></TabPanel>
                         <TabPanel value="3"><ExcelTable showFullData={showFullData} researchData={oceanData} /></TabPanel>
                         {/* <TabPanel value="4"></TabPanel> */}
                         {/* <TabPanel value="5"></TabPanel> */}

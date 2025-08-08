@@ -1,10 +1,10 @@
 import { MapContainer, TileLayer, Polygon, Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Grid2 as Grid, Checkbox, FormControlLabel, FormGroup, Typography, Button, Box } from '@mui/material';
-import React, { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ClearIcon from '@mui/icons-material/Clear';
 
-const OceanMap = ({ selectedResearch, researchData }) => {
+const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnmount }) => {
 
     const [oceans, setOceans] = useState([]);
     const getOceans = () => {
@@ -20,11 +20,9 @@ const OceanMap = ({ selectedResearch, researchData }) => {
                 setOceans(oceans)
             })
     }
-    useEffect(() => {
-        getOceans()
-    }, [])
 
     const [elements, setElements] = useState([]);
+
     const getElements = () => {
         fetch(process.env.PUBLIC_URL + '/elements.json'
             , {
@@ -35,104 +33,99 @@ const OceanMap = ({ selectedResearch, researchData }) => {
             })
             .then((response) => response.json())
             .then((elements) => {
+                if (storedElementList.length > 0) {
+                    elements = elements.map(element => {
+                        storedElementList.every(storedElement => {
+                            if (element.name === storedElement.name) {
+                                element = structuredClone(storedElement)
+                                return false
+                            }
+                            else {
+                                return true
+                            }
+                        })
+                        return element
+                    })
+                    setCheckedElements(storedElementList)
+                }
                 setElements(elements);
             })
     }
-    useEffect(() => {
-        getElements()
-    }, [])
 
     const [oceanData, setOceanData] = useState([]);
-    const [checkedElements, setCheckedElements] = useState([]);
     const [allStudies, setAllStudies] = useState(false);
+    const [indeterminate, setIndeterminate] = useState(false);
+
+    const [checkedElements, setCheckedElements] = useState([]);
+    const elementsRef = useRef(checkedElements)
 
     useEffect(() => {
-        setAllStudies(false)
-    }, [researchData]);
+        //Executes As component loads
+        if (oceans.length === 0) {
+            getOceans()
+        }
+        if (elements.length === 0) {
+            getElements()
+        }
+
+        //Executes As component is removed
+        return () => {
+            // Component is unmounting, send data back to parent
+            beforeUnmount(elementsRef.current);
+        };
+    }, []);
+
+
+    // useEffect(() => {
+    //     setAllStudies(false)
+    // }, [researchData]);
+
+    // useEffect(() => {
+    //     elements.forEach(element => {
+    //         element.checked = allStudies
+    //         element.types?.forEach(type => {
+    //             type.checked = allStudies
+    //             type.methods?.forEach(method => {
+    //                 method.checked = allStudies
+    //             })
+    //         })
+    //     })
+    //     //setCheckedElements(allStudies ? elements : [])
+    // }, [allStudies]);
+    // useEffect(() => {
+    //     setCheckedElements(storedElementList)
+    // }, [storedElementList]);
 
     useEffect(() => {
+        elementsRef.current = checkedElements;
+        setOceanData(filterResearchData(researchData))
+    }, [checkedElements]);
+
+    const handleSelectAllChange = (isChecked) => {
+        setAllStudies(isChecked)
+        setIndeterminate(false)
         elements.forEach(element => {
-            element.checked = allStudies
+            element.checked = isChecked
             element.types?.forEach(type => {
-                type.checked = allStudies
+                type.checked = isChecked
                 type.methods?.forEach(method => {
-                    method.checked = allStudies
+                    method.checked = isChecked
                 })
             })
         })
-        setCheckedElements(allStudies ? elements : [])
-    }, [allStudies]);
-
-    useEffect(() => {
-        // This will be executed when the state changes
-        let filteredData = []
-        oceans.forEach(function (ocean) {
-            ocean.studies = 0
-        });
-        researchData.forEach(research => {
-            let numberOfStudies = filteredData.length
-            checkedElements.every(element => {
-                if (research[element.name] || research[element.name] > 0) {
-                    if (element.types != undefined) {
-                        element.types.every(type => {
-                            if (type.name == research["Solubility"] && type.checked) {
-                                if (type.methods != undefined) {
-                                    type.methods.every(method => {
-                                        if (research["Methodology"]?.includes(method.name) && method.checked) {
-                                            filteredData.push(research)
-                                            return false;
-                                        }
-                                        return true;
-                                    });
-                                }
-                                else {
-                                    filteredData.push(research)
-                                    return false;
-                                }
-                            }
-                            return true;
-                        });
-                    }
-                    else {
-                        filteredData.push(research)
-                        return false
-                    }
-                }
-                if (filteredData.length > numberOfStudies) {
-                    return false
-                }
-                return true;
-            });
-            if (filteredData.length > numberOfStudies) {
-                oceans.forEach(function (ocean) {
-                    ocean.studies += research["Ocean"] != undefined ? research["Ocean"].includes(ocean.name) : 0
-                });
-            }
-        })
-        setOceanData(filteredData)
-    }, [checkedElements]);
-
-    const showResearch = (oceanName, studies) => event => {
-        if (studies > 0) {
-            let research = oceanData.filter(x => x["Ocean"]?.includes(oceanName))
-            selectedResearch(research)
-        }
-        else {
-            alert("There are no studies for selected criteria")
-        }
+        setCheckedElements(isChecked ? elements : [])
     }
+
     const handleCheckboxChange = (element, index, type = null, method = null) => {
         if (type == null) {
             element.checked = !element.checked
-            if (element.name == "Iron (Fe)") {
-                //check total and soluble with all methodologies
-                element.types?.forEach(type => {
-                    type.checked = element.checked
-                    type.methods?.forEach(method => {
-                        method.checked = element.checked
-                    })
-                });
-            }
+            //check total and soluble with all methodologies
+            element.types?.forEach(type => {
+                type.checked = element.checked
+                type.methods?.forEach(method => {
+                    method.checked = element.checked
+                })
+            });
         }
         else if (type != null) {
             if (method == null) {
@@ -153,8 +146,138 @@ const OceanMap = ({ selectedResearch, researchData }) => {
             }
         }
         setCheckedElements(elements.filter(element => element.checked))
+        //setOceanData(filterResearchData(researchData))
     };
 
+    function filterResearchData(researchData) {
+        let filteredData = []
+        oceans.forEach(function (ocean) {
+            ocean.studies = 0
+        });
+
+        if (checkedElements.length > 0 && checkedElements.length === elements.length) {
+            setIndeterminate(false)
+            setAllStudies(true)
+        }
+        else if (checkedElements.length === 0) {
+            setIndeterminate(false)
+            setAllStudies(false)
+        }
+        else {
+            setIndeterminate(true)
+            setAllStudies(false)
+        }
+
+        researchData.forEach(research => {
+            let numberOfStudies = filteredData.length
+            checkedElements.every(element => {
+                //if (element.checked) {
+                if (research[element.name] || research[element.name] > 0) {
+                    if (element.types != undefined) {
+                        element.types.every(type => {
+                            if (type.name == research["Solubility"] && type.checked) {
+                                if (type.methods != undefined) {
+                                    type.methods.every(method => {
+                                        if (research["Methodology"]?.includes(method.name) && method.checked) {
+                                            filteredData.push(research)
+                                            return false;//Breaks the loop once paper has a matching leaching methodology
+                                        }
+                                        return true;
+                                    });
+                                }
+                                else {
+                                    filteredData.push(research)
+                                    return false;//Breaks the loop once paper has a matching solubility data
+                                }
+                            }
+                            return true;
+                        });
+                    }
+                    else {
+                        filteredData.push(research)
+                        return false//Breaks the loop once paper has one matching element
+                    }
+                }
+                if (filteredData.length > numberOfStudies) {
+                    return false//Breaks the loop and moves to next paper
+                }
+                return true;
+                // }
+                // else {
+                //     return true;//continues to the next element
+                // }
+            });
+            if (filteredData.length > numberOfStudies) {
+                oceans.forEach(function (ocean) {
+                    ocean.studies += research["Ocean"] != undefined ? research["Ocean"].includes(ocean.name) : 0
+                });
+            }
+        })
+        return filteredData;
+    }
+    // useEffect(() => {
+    //     // This will be executed when checkbox changes
+    //     let filteredData = []
+    //     oceans.forEach(function (ocean) {
+    //         ocean.studies = 0
+    //     });
+    //     researchData.forEach(research => {
+    //         let numberOfStudies = filteredData.length
+    //         elements.every(element => {
+    //             if (element.checked) {
+    //                 if (research[element.name] || research[element.name] > 0) {
+    //                     if (element.types != undefined) {
+    //                         element.types.every(type => {
+    //                             if (type.name == research["Solubility"] && type.checked) {
+    //                                 if (type.methods != undefined) {
+    //                                     type.methods.every(method => {
+    //                                         if (research["Methodology"]?.includes(method.name) && method.checked) {
+    //                                             filteredData.push(research)
+    //                                             return false;//Breaks the loop once paper has a matching leaching methodology
+    //                                         }
+    //                                         return true;
+    //                                     });
+    //                                 }
+    //                                 else {
+    //                                     filteredData.push(research)
+    //                                     return false;//Breaks the loop once paper has a matching solubility data
+    //                                 }
+    //                             }
+    //                             return true;
+    //                         });
+    //                     }
+    //                     else {
+    //                         filteredData.push(research)
+    //                         return false//Breaks the loop once paper has one matching element
+    //                     }
+    //                 }
+    //                 if (filteredData.length > numberOfStudies) {
+    //                     return false//Breaks the loop and moves to next paper
+    //                 }
+    //                 return true;
+    //             }
+    //             else {
+    //                 return true;
+    //             }
+    //         });
+    //         if (filteredData.length > numberOfStudies) {
+    //             oceans.forEach(function (ocean) {
+    //                 ocean.studies += research["Ocean"] != undefined ? research["Ocean"].includes(ocean.name) : 0
+    //             });
+    //         }
+    //     })
+    //     setOceanData(filteredData)
+    // }, [elements]);
+
+    const showResearchTable = (oceanName, studies) => event => {
+        if (studies > 0) {
+            let research = oceanData.filter(x => x["Ocean"]?.includes(oceanName))
+            selectedResearch(research)
+        }
+        else {
+            alert("There are no studies for selected criteria")
+        }
+    }
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Grid container>
@@ -164,12 +287,27 @@ const OceanMap = ({ selectedResearch, researchData }) => {
                     textAlign: "left"
                 }}>
                     <FormGroup>
-                        <Button variant="contained" size="medium" style={{ width: '80%', marginBottom: "10px", textAlign:"left" }} onClick={(event) => setAllStudies(false)} endIcon={<ClearIcon />}>Reset Selection</Button>
-                        <FormControlLabel control={<Checkbox checked={allStudies} indeterminate={checkedElements.length > 0 && checkedElements.length !== elements.length} onChange={() => setAllStudies(!allStudies)} />} label="Select All" />
+                        <Button
+                            variant="contained"
+                            size="medium"
+                            style={{ width: '80%', marginBottom: "10px", textAlign: "left" }}
+                            onClick={(event) => handleSelectAllChange(false)}
+                            endIcon={<ClearIcon />}>
+                            Reset Selection
+                        </Button>
+                        <FormControlLabel
+                            control={
+                                <Checkbox checked={allStudies}
+                                    indeterminate={indeterminate}//checkedElements.length > 0 && checkedElements.length !== elements.length
+                                    onChange={(event) => handleSelectAllChange(event.target.checked)} />//setAllStudies(!allStudies)
+                            }
+                            label="Select All" />
                         <Grid container>
                             {elements.map((element, index) => {
                                 return (
-                                    <Grid size={{ sm: 12, xs: 12, md: 12 }} key={element.name}>
+                                    <Grid
+                                        size={{ sm: 12, xs: 12, md: 12 }}
+                                        key={element.name}>
                                         <FormControlLabel label={element.name} control={
                                             <Checkbox
                                                 checked={element.checked}
@@ -207,7 +345,7 @@ const OceanMap = ({ selectedResearch, researchData }) => {
                 <Grid size={{ sm: 9, xs: 12, md: 10 }} style={{
                     height: '85vh',
                     aspectRatio: '1.75 / 1', // Maintain world map proportions (W:H ≈ 2:1)
-                    boxShadow: '0 0 10px rgba(0,0,0,0.2)',
+                    boxShadow: '0 0 2px rgba(255, 255, 255, 1)',
                     borderRadius: '2px',
                     overflowY: 'none'
                 }}
@@ -219,7 +357,7 @@ const OceanMap = ({ selectedResearch, researchData }) => {
                         zoom={2}
                         minZoom={2}
                         maxZoom={2}
-                        style={{ height: '100%', width: '100%', backgroundColor: "#ffffff !important" }}
+                        style={{ height: '110%', width: '100%', backgroundColor: "#ffffff !important" }}
                         worldCopyJump={false}
                         maxBounds={[[-90, -180], [90, 180]]}
                         maxBoundsViscosity={1.0}
@@ -236,7 +374,7 @@ const OceanMap = ({ selectedResearch, researchData }) => {
                                 pathOptions={{ color: ocean.color, fillOpacity: 0.3 }}
                             >
                                 <Tooltip permanent direction="center" interactive={true} style={{ cursor: "pointer" }}>
-                                    <span onDoubleClick={showResearch(ocean.name, ocean.studies)} style={{ cursor: "pointer" }}>
+                                    <span onDoubleClick={showResearchTable(ocean.name, ocean.studies)} style={{ cursor: "pointer" }}>
                                         <strong>{ocean.name} : {ocean.studies}</strong>
                                     </span>
                                 </Tooltip>

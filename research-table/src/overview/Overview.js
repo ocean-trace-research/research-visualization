@@ -1,8 +1,7 @@
-import { Science } from '@mui/icons-material';
 import { useState, useEffect } from 'react'
 import { List, ListItem, Link, Typography, Box, Grid2 as Grid } from '@mui/material';
 
-function Overview() {    
+function Overview() {     
     const [links, setLinks] = useState([]);
     const getLinks = () => {
         fetch(process.env.PUBLIC_URL + '/links.json'
@@ -14,9 +13,9 @@ function Overview() {
             })
             .then((response) => response.json())
             .then((links) => {
-                setLinks(links);
+                return setLinks(links);
             })
-    }
+    }   
     useEffect(() => {
         getLinks()
     }, [])
