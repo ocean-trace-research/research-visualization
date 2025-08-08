@@ -1,5 +1,5 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableFooter, TableSortLabel, Button } from '@mui/material';
-import { Paper, TextField, Link, IconButton, Box, OpenInNewIcon } from '@mui/material'
+import { Paper, TextField, Link, IconButton, Box } from '@mui/material'
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft'
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
 import LastPageIcon from '@mui/icons-material/LastPage'
@@ -204,7 +204,7 @@ const ExcelTable = ({ showFullData, researchData }) => {
                         onChange={handleChangeSearchQuery}
                         style={{ align: "left", marginLeft: "10px", float: "left", marginTop: "10px", marginBottom: "10px", width: "500px" }}
                     />
-                    <Button style={{ marginTop: "20px" }} onClick={() => handleShowAllClick()}>Show All Studies</Button>
+                    <Button variant="contained" size="medium" style={{ marginTop: "20px" }} onClick={() => handleShowAllClick()}>Show All Studies</Button>
                     {filteredData.length > 0 && (
                         <Table stickyHeader aria-label="sticky custom pagination table">
                             <caption>A table with research papers related to trace elements in ocean</caption>
@@ -218,7 +218,7 @@ const ExcelTable = ({ showFullData, researchData }) => {
                             <TableBody>
                                 {(rowsPerPage > 0 ? visibleRows : filteredData).map((row, index) => (
                                     <TableRow key={index}>
-                                        <TableCell sx={{ width: '15%' }}><Link color="primary" href={row["DOI"]} target="_blank">{row["References"]}<OpenInNewIcon/></Link></TableCell>
+                                        <TableCell sx={{ width: '15%' }}><Link color="primary" href={row["DOI"]} target="_blank">{row["References"]}</Link></TableCell>
                                         <TableCell sx={{ width: '5%' }}>{row["Year"]}</TableCell>
                                         <TableCell sx={{ width: '30%' }}>{row["Title"]}</TableCell>
                                         <TableCell sx={{ width: '15%' }}>{row["Ocean"]?.replaceAll("|", " ") ?? ""}</TableCell>

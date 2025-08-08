@@ -10,28 +10,10 @@ import Overview from "../overview/Overview";
 function Home() {
     const [researchData, setResearchData] = React.useState([]);
     const [oceanData, setOceanData] = React.useState([]);
-    const [value, setValue] = React.useState("3");
+    const [value, setValue] = React.useState("2");
     const [ocean, setOcean] = React.useState("");
 
-    const handleChange = (event, newValue) => {
-        setOcean("")
-        setValue(newValue);
-    };
-
-    const openResearchTable = (selectedResearch) => {
-        setOceanData(selectedResearch)
-        setValue("2")
-    }
-    const showFullData = (showFullData) => {
-        if (showFullData) {
-            openResearchTable(researchData)
-        }
-    }
-
-    const selectedResearch = (selectedResearch) => {
-        openResearchTable(selectedResearch)
-    }
-
+    //Fetch data from excel file
     useEffect(() => {
         const filePath = process.env.PUBLIC_URL + "/mapped_studies_new.xlsx";
         fetch(filePath)
@@ -47,6 +29,26 @@ function Home() {
             .catch(error => console.error("Error loading Excel file:", error));
     }, []);
 
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
+    //display data from selected ocean and elements
+    const selectedResearch = (selectedResearch) => {
+        openResearchTable(selectedResearch)
+    }
+    const openResearchTable = (selectedResearch) => {
+        setOceanData(selectedResearch)
+        setValue("3")
+    }
+
+    //show all data on table
+    const showFullData = (showFullData) => {
+        if (showFullData) {
+            openResearchTable(researchData)
+        }
+    }
+
     return (
 
         <div className="Home">
@@ -56,16 +58,16 @@ function Home() {
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                             <TabList onChange={handleChange} aria-label="lab API tabs example">
                                 {/* <Tab label="Introduction" value="1" /> */}
-                                <Tab label="Research Table" value="2" />
-                                <Tab label="Ocean Map" value="3" />
+                                <Tab label="Ocean Map" value="2" />
+                                <Tab label="Research Table" value="3" />
                                 {/* <Tab label="Methodology" value="4" /> */}
                                 {/* <Tab label="Diversity" value="5" /> */}
                                 <Tab label="Important Links" value="6" />
                             </TabList>
                         </Box>
                         {/* <TabPanel value="1"></TabPanel> */}
-                        <TabPanel value="2"><ExcelTable showFullData={showFullData} researchData={oceanData} /></TabPanel>
-                        <TabPanel value="3"><OceanMap selectedResearch={selectedResearch} researchData={researchData} /></TabPanel>
+                        <TabPanel value="2"><OceanMap selectedResearch={selectedResearch} researchData={researchData} /></TabPanel>
+                        <TabPanel value="3"><ExcelTable showFullData={showFullData} researchData={oceanData} /></TabPanel>
                         {/* <TabPanel value="4"></TabPanel> */}
                         {/* <TabPanel value="5"></TabPanel> */}
                         <TabPanel value="6"><Overview /></TabPanel>

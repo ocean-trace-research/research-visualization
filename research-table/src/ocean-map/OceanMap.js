@@ -1,190 +1,46 @@
-import { MapContainer, TileLayer, Polygon, Tooltip, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Polygon, Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { Grid2 as Grid, Checkbox, FormControlLabel, FormGroup, Typography, Button } from '@mui/material';
-import React, { useCallback, useEffect, useState } from "react";
-
-// Ocean polygon definitions (simplified bounding boxes)
-const oceans = [
-    {
-        name: "Central East Pacific",//Ocean
-        coordinates: [[[30, -180], [-15, -180], [-15, -75], [5, -75], [30, -112], [30, -180]]],
-        color: "#CC79A7",
-        studies: 0//9
-    },
-    {
-        name: "Central West Pacific",// Ocean
-        coordinates: [[[30, 180], [-15, 180], [-15, 110], [30, 110], [30, 180]]],
-        color: "#CC79A7",
-        studies: 0//10
-    },
-    {
-        name: "Western North Pacific",// Ocean
-        coordinates: [[[60, 120], [30, 120], [30, 180], [60, 180], [60, 120]]],
-        color: "#332288",
-        studies: 0//10
-    },
-    {
-        name: "Australia Pacific",// Ocean
-        coordinates: [[[-15, 110], [-50, 110], [-50, 180], [-15, 180], [-15, 110]]],
-        color: "#F3BC00",
-        studies: 0//9
-    },
-    {
-        name: "South Pacific",// Ocean
-        coordinates: [[[-15, -180], [-50, -180], [-50, -70], [-15, -70], [-15, -180]]],
-        color: "#F0E442",
-        studies: 0//5
-    },
-    {
-        name: "Eastern North Pacific",// Ocean
-        coordinates: [[[60, -180], [30, -180], [30, -90], [60, -90], [60, -180]]],
-        color: "#F3BC00",
-        studies: 0//5
-    },
-    {
-        name: "North Atlantic",// Ocean
-        coordinates: [[[60, -90], [30, -90], [30, -5], [40, -5], [40, 0], [60, 0], [60, -90]]],
-        color: "yellow",
-        studies: 0//11
-    },
-    {
-        name: "Central Atlantic",// Ocean
-        coordinates: [[[30, -112], [5, -75], [-15, -75], [-15, 20], [30, 20], [30, -112]]],
-        color: "#51bb57",
-        studies: 0//21
-    },
-    {
-        name: "South Atlantic",// Ocean
-        coordinates: [[[-15, -70], [-50, -70], [-50, 20], [-15, 20], [-15, -70]]],
-        color: "#009E73",
-        studies: 0//11
-    },
-    {
-        name: "Medeterranian, Black and Caspian Sea",// Ocean
-        coordinates: [[[30, -5], [40, -5], [40, 0], [50, 0], [50, 60], [30, 60], [30, -5]]],
-        color: "#000000",
-        studies: 0//15
-    },
-    {
-        name: "Bay of Bengal",
-        coordinates: [[[30, 80], [0, 80], [0, 110], [30, 110], [30, 80]]],
-        color: "#000000",
-        studies: 0//4
-    },
-    {
-        name: "Arabian Sea",
-        coordinates: [[[30, 20], [0, 20], [0, 80], [30, 80], [30, 20]]],
-        color: "#E69F00",
-        studies: 0//6
-    },
-    {
-        name: "Indian Ocean",
-        coordinates: [[[0, 20], [-50, 20], [-50, 110], [0, 110], [0, 20]]],
-        color: "#56B4E9",
-        studies: 0//7
-    },
-    {
-        name: "Southern Ocean",
-        coordinates: [[[-50, -180], [-90, -180], [-90, 180], [-50, 180], [-50, -180]]],
-        color: "#D55E00",
-        studies: 0//6
-    },
-    {
-        name: "Arctic Ocean",
-        coordinates: [[[90, -180], [60, -180], [60, 180], [90, 180], [90, -180]]],
-        color: "#0072B2",
-        studies: 0//7
-    }
-];
-
-const elements = [
-    {
-        name: 'Iron (Fe)', checked: true,
-        types: [
-            { name: "Total", checked: true },
-            {
-                name: "Soluble", checked: true,
-                methods: [{ name: "Acid", checked: true }, { name: "Seawater", checked: true }, { name: "Pure Water", checked: true }]
-            }
-        ]
-    },
-    { name: 'Major Ions (MI)', checked: true },
-    { name: 'Aluminum (Al)', checked: true },
-    { name: 'Manganese (Mn)', checked: true },
-    { name: 'Lead (Pb)', checked: true },
-    { name: 'Zinc (Zn)', checked: true },
-    { name: 'Nitrogen (N)', checked: true },
-    { name: 'Vanadium (V)', checked: true },
-    { name: 'Calcium (Ca)', checked: true },
-    { name: 'Phosphorus (P)', checked: true },
-    { name: 'Titanium (Ti)', checked: true },
-    { name: 'Potassium (K)', checked: true },
-    { name: 'Copper (Cu)', checked: true },
-    { name: 'Sodium (Na)', checked: true },
-    { name: 'Nickel (Ni)', checked: true },
-    { name: 'Silicon (Si)', checked: true },
-    { name: 'Magnesium (Mg)', checked: true },
-    { name: 'Chromium (Cr)', checked: true },
-    { name: 'Cadmium (Cd)', checked: true },
-    { name: 'Cobalt (Co)', checked: true },
-    { name: 'Chlorine (Cl)', checked: true },
-    { name: 'Antimony (Sb)', checked: true },
-    { name: 'Bromine (Br)', checked: true },
-    { name: 'Scandium (Sc)', checked: true },
-    { name: 'Arsenic (As)', checked: true },
-    { name: 'Selenium (Se)', checked: true },
-    { name: 'Thorium (Th)', checked: true },
-    { name: 'Barium (Ba)', checked: true },
-    { name: 'Lanthanum (La)', checked: true },
-    { name: 'Samarium (Sm)', checked: true },
-    { name: 'Iodine (I)', checked: true },
-    { name: 'Rubidium (Rb)', checked: true },
-    { name: 'Strontium (Sr)', checked: true },
-    { name: 'Caesium (Cs)', checked: true },
-    { name: 'Europium (Eu)', checked: true },
-    { name: 'Molybdenum (Mo)', checked: true },
-    { name: 'Zirconium (Zr)', checked: true },
-    { name: 'Cerium (Ce)', checked: true },
-    { name: 'Gallium (Ga)', checked: true },
-    { name: 'Tin (Sn)', checked: true },
-    { name: 'Hafnium (Hf)', checked: true },
-    { name: 'Germanium (Ge)', checked: true },
-    { name: 'Gold (Au)', checked: true },
-    { name: 'Indium (In)', checked: true },
-    { name: 'Lutetium (Lu)', checked: true },
-    { name: 'Ruthenium (Ru)', checked: true },
-    { name: 'Tungsten (W)', checked: true },
-    { name: 'Beryllium (Be)', checked: true },
-    { name: 'Yttrium (Y)', checked: true },
-    { name: 'Silver (Ag)', checked: true },
-    { name: 'Tantalum (Ta)', checked: true },
-    { name: 'Terbium (Tb)', checked: true },
-    { name: 'Ytterbium (Yb)', checked: true },
-    { name: 'Uranium (U)', checked: true },
-    { name: 'Niobium (Nb)', checked: true },
-    { name: 'Lithium (Li)', checked: true }
-]
-
-// Fit to oceans
-const FitToOceans = ({ polygons }) => {
-    const map = useMap();
-    const allCoords = polygons.flatMap(p => p.coordinates[0]);
-
-    map.fitBounds(allCoords, {
-        padding: [20, 20],
-        maxZoom: 3,
-    });
-
-    return null;
-};
+import { Grid2 as Grid, Checkbox, FormControlLabel, FormGroup, Typography, Button, Box } from '@mui/material';
+import React, { useEffect, useState } from "react";
+import ClearIcon from '@mui/icons-material/Clear';
 
 const OceanMap = ({ selectedResearch, researchData }) => {
-    const [hideElements, setHideElements] = useState(false);
-    const [showLabel, setShowLabel] = useState("Show More Elements");
 
+    const [oceans, setOceans] = useState([]);
+    const getOceans = () => {
+        fetch(process.env.PUBLIC_URL + '/oceans.json'
+            , {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then((response) => response.json())
+            .then((oceans) => {
+                setOceans(oceans)
+            })
+    }
     useEffect(() => {
-        setShowLabel(hideElements ? "Show Less Elements" : "Show More Elements")
-    }, [hideElements]);
+        getOceans()
+    }, [])
+
+    const [elements, setElements] = useState([]);
+    const getElements = () => {
+        fetch(process.env.PUBLIC_URL + '/elements.json'
+            , {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then((response) => response.json())
+            .then((elements) => {
+                setElements(elements);
+            })
+    }
+    useEffect(() => {
+        getElements()
+    }, [])
 
     const [oceanData, setOceanData] = useState([]);
     const [checkedElements, setCheckedElements] = useState([]);
@@ -192,7 +48,7 @@ const OceanMap = ({ selectedResearch, researchData }) => {
 
     useEffect(() => {
         setAllStudies(false)
-    }, [researchData]); 
+    }, [researchData]);
 
     useEffect(() => {
         elements.forEach(element => {
@@ -300,66 +156,64 @@ const OceanMap = ({ selectedResearch, researchData }) => {
     };
 
     return (
-        <div>
-            <div style={{
-                height: '100vh',
-                width: '100vw'
-            }}>
-                <div style={{
-                    width: '20vw',
-                    overflowY: 'scroll'
+        <Box sx={{ flexGrow: 1 }}>
+            <Grid container>
+                <Grid size={{ sm: 3, xs: 12, md: 2 }} style={{
+                    height: '85vh',
+                    overflowY: 'scroll',
+                    textAlign: "left"
                 }}>
                     <FormGroup>
-                        <FormControlLabel control={<Checkbox checked={allStudies} onChange={() => setAllStudies(!allStudies)} />} label="Select All" />
+                        <Button variant="contained" size="medium" style={{ width: '80%', marginBottom: "10px", textAlign:"left" }} onClick={(event) => setAllStudies(false)} endIcon={<ClearIcon />}>Reset Selection</Button>
+                        <FormControlLabel control={<Checkbox checked={allStudies} indeterminate={checkedElements.length > 0 && checkedElements.length !== elements.length} onChange={() => setAllStudies(!allStudies)} />} label="Select All" />
                         <Grid container>
                             {elements.map((element, index) => {
-                                if (hideElements || index < 12) {
-                                    return (
-                                        <Grid size={{ sm: 3, xs: 6, md: 2 }} key={element.name} style={{ textAlign: "left" }}>
-                                            <FormControlLabel label={element.name} control={
-                                                <Checkbox
-                                                    checked={element.checked}
-                                                    onChange={(event) => handleCheckboxChange(element, index)}
-                                                />
-                                            } />
-                                            {element.types?.map((type) => (
-                                                <div key={type.name}>
-                                                    <FormControlLabel style={{ marginLeft: "10px" }} label={type.name} control={
-                                                        <Checkbox
-                                                            checked={type.checked}
-                                                            value={type.name}
-                                                            onChange={(event) => handleCheckboxChange(element, index, type)}
-                                                        />
-                                                    } />
-                                                    {type.methods?.map((method) => (
-                                                        <div key={method.name}>
-                                                            <FormControlLabel style={{ marginLeft: "20px" }} label={method.name} control={
-                                                                <Checkbox
-                                                                    checked={method.checked}
-                                                                    value={method.name}
-                                                                    onChange={(event) => handleCheckboxChange(element, index, type, method)}
-                                                                />
-                                                            } />
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ))}
-                                        </Grid>
-                                    )
-                                }
+                                return (
+                                    <Grid size={{ sm: 12, xs: 12, md: 12 }} key={element.name}>
+                                        <FormControlLabel label={element.name} control={
+                                            <Checkbox
+                                                checked={element.checked}
+                                                onChange={(event) => handleCheckboxChange(element, index)}
+                                            />
+                                        } />
+                                        {element.types?.map((type) => (
+                                            <div key={type.name}>
+                                                <FormControlLabel style={{ marginLeft: "10px" }} label={type.name} control={
+                                                    <Checkbox
+                                                        checked={type.checked}
+                                                        value={type.name}
+                                                        onChange={(event) => handleCheckboxChange(element, index, type)}
+                                                    />
+                                                } />
+                                                {type.methods?.map((method) => (
+                                                    <div key={method.name}>
+                                                        <FormControlLabel style={{ marginLeft: "20px" }} label={method.name} control={
+                                                            <Checkbox
+                                                                checked={method.checked}
+                                                                value={method.name}
+                                                                onChange={(event) => handleCheckboxChange(element, index, type, method)}
+                                                            />
+                                                        } />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ))}
+                                    </Grid>
+                                )
                             })}
                         </Grid>
                     </FormGroup>
-                    <Button sx={{ align: "left", marginTop: "10px", marginBottom: "20px" }} onClick={() => setHideElements(!hideElements)}>{showLabel}</Button>
-                </div>
-                <div style={{
-                    width: '80vw',
+                </Grid>
+                <Grid size={{ sm: 9, xs: 12, md: 10 }} style={{
+                    height: '85vh',
                     aspectRatio: '1.75 / 1', // Maintain world map proportions (W:H ≈ 2:1)
                     boxShadow: '0 0 10px rgba(0,0,0,0.2)',
-                    borderRadius: '3px',
-                    overflow: 'scroll'
-                }}>
-                    <div><Typography style={{ fontWeight: "bold" }}>Each tooltip shows number of studies done for that ocean. Double click on the tooltip to see studies for that ocean</Typography></div>
+                    borderRadius: '2px',
+                    overflowY: 'none'
+                }}
+                >
+                    {/* <div > */}
+                    <Typography style={{ fontWeight: "bold" }}>Each tooltip shows number of studies done for that ocean. Double click on the tooltip to see studies for that ocean</Typography>
                     <MapContainer
                         center={[0, 0]}
                         zoom={2}
@@ -375,11 +229,10 @@ const OceanMap = ({ selectedResearch, researchData }) => {
                             attribution="© OpenStreetMap contributors"
                             noWrap={true}
                         />
-
                         {oceans.map((ocean, index) => (
                             <Polygon
                                 key={index}
-                                positions={ocean.coordinates}//swapCoordinates(ocean.coordinates)
+                                positions={ocean.coordinates}
                                 pathOptions={{ color: ocean.color, fillOpacity: 0.3 }}
                             >
                                 <Tooltip permanent direction="center" interactive={true} style={{ cursor: "pointer" }}>
@@ -389,13 +242,10 @@ const OceanMap = ({ selectedResearch, researchData }) => {
                                 </Tooltip>
                             </Polygon>
                         ))}
-
-                        <FitToOceans polygons={oceans} />
-
                     </MapContainer>
-                </div>
-            </div>
-        </div>
+                </Grid>
+            </Grid>
+        </Box>
     );
 };
 

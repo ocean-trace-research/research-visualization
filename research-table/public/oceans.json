@@ -1,0 +1,92 @@
+[
+    {
+        "name": "Central East Pacific",
+        "coordinates": [[[30, -180], [-15, -180], [-15, -75], [5, -75], [30, -112], [30, -180]]],
+        "color": "#CC79A7",
+        "studies": 0
+    },
+    {
+        "name": "Central West Pacific",
+        "coordinates": [[[30, 180], [-15, 180], [-15, 110], [30, 110], [30, 180]]],
+        "color": "#CC79A7",
+        "studies": 0
+    },
+    {
+        "name": "Western North Pacific",
+        "coordinates": [[[60, 120], [30, 120], [30, 180], [60, 180], [60, 120]]],
+        "color": "#332288",
+        "studies": 0
+    },
+    {
+        "name": "Australia Pacific",
+        "coordinates": [[[-15, 110], [-50, 110], [-50, 180], [-15, 180], [-15, 110]]],
+        "color": "#F3BC00",
+        "studies": 0
+    },
+    {
+        "name": "South Pacific",
+        "coordinates": [[[-15, -180], [-50, -180], [-50, -70], [-15, -70], [-15, -180]]],
+        "color": "#F0E442",
+        "studies": 0
+    },
+    {
+        "name": "Eastern North Pacific",
+        "coordinates": [[[60, -180], [30, -180], [30, -90], [60, -90], [60, -180]]],
+        "color": "#F3BC00",
+        "studies": 0
+    },
+    {
+        "name": "North Atlantic",
+        "coordinates": [[[60, -90], [30, -90], [30, -5], [40, -5], [40, 0], [60, 0], [60, -90]]],
+        "color": "yellow",
+        "studies": 0
+    },
+    {
+        "name": "Central Atlantic",
+        "coordinates": [[[30, -112], [5, -75], [-15, -75], [-15, 20], [30, 20], [30, -112]]],
+        "color": "#51bb57",
+        "studies": 0
+    },
+    {
+        "name": "South Atlantic",
+        "coordinates": [[[-15, -70], [-50, -70], [-50, 20], [-15, 20], [-15, -70]]],
+        "color": "#009E73",
+        "studies": 0
+    },
+    {
+        "name": "Medeterranian, Black and Caspian Sea",
+        "coordinates": [[[30, -5], [40, -5], [40, 0], [50, 0], [50, 60], [30, 60], [30, -5]]],
+        "color": "#000000",
+        "studies": 0
+    },
+    {
+        "name": "Bay of Bengal",
+        "coordinates": [[[30, 80], [0, 80], [0, 110], [30, 110], [30, 80]]],
+        "color": "#000000",
+        "studies": 0
+    },
+    {
+        "name": "Arabian Sea",
+        "coordinates": [[[30, 20], [0, 20], [0, 80], [30, 80], [30, 20]]],
+        "color": "#E69F00",
+        "studies": 0
+    },
+    {
+        "name": "Indian Ocean",
+        "coordinates": [[[0, 20], [-50, 20], [-50, 110], [0, 110], [0, 20]]],
+        "color": "#56B4E9",
+        "studies": 0
+    },
+    {
+        "name": "Southern Ocean",
+        "coordinates": [[[-50, -180], [-90, -180], [-90, 180], [-50, 180], [-50, -180]]],
+        "color": "#D55E00",
+        "studies": 0
+    },
+    {
+        "name": "Arctic Ocean",
+        "coordinates": [[[90, -180], [60, -180], [60, 180], [90, 180], [90, -180]]],
+        "color": "#0072B2",
+        "studies": 0
+    }
+]
