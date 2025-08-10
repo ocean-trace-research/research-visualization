@@ -143,8 +143,8 @@ const ExcelTable = ({ showFullData, researchData }) => {
         if (researchData && researchData.length > 0) {
             let header = Object.keys(researchData[0]).slice(0, 17)
             header.splice(14, 1)
-            header.splice(10, 2)
-            header.splice(3, 6)
+            header.splice(6, 6)
+            header.splice(3, 2)
             setHeadData(header);
             setRowData(researchData)
         }
@@ -222,7 +222,7 @@ const ExcelTable = ({ showFullData, researchData }) => {
                                         <TableCell sx={{ width: '5%' }}>{row["Year"]}</TableCell>
                                         <TableCell sx={{ width: '30%' }}>{row["Title"]}</TableCell>
                                         <TableCell sx={{ width: '15%' }}>{row["Ocean"]?.replaceAll("|", " ") ?? ""}</TableCell>
-                                        <TableCell sx={{ width: '15%' }}>{row["Elements"]?.replaceAll(",", ", ") ?? ""}</TableCell>
+                                        <TableCell sx={{ width: '15%' }}>{row["Elements"]? row["Elements"] : ""}</TableCell>
                                         <TableCell sx={{ width: '10%' }}>{row["Major Ions (MI)"] == 1 ? "Yes" : ""}</TableCell>
                                         <TableCell sx={{ width: '5%' }}>{row["Solubility"]}</TableCell>
                                         <TableCell sx={{ width: '10%' }}>{row["Methodology"]}</TableCell>

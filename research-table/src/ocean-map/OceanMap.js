@@ -68,33 +68,11 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
             getElements()
         }
 
-        //Executes As component is removed
-        return () => {
-            // Component is unmounting, send data back to parent
+        //Executes As component is removed, stores the checked elements list
+        return () => {            
             beforeUnmount(elementsRef.current);
         };
     }, []);
-
-
-    // useEffect(() => {
-    //     setAllStudies(false)
-    // }, [researchData]);
-
-    // useEffect(() => {
-    //     elements.forEach(element => {
-    //         element.checked = allStudies
-    //         element.types?.forEach(type => {
-    //             type.checked = allStudies
-    //             type.methods?.forEach(method => {
-    //                 method.checked = allStudies
-    //             })
-    //         })
-    //     })
-    //     //setCheckedElements(allStudies ? elements : [])
-    // }, [allStudies]);
-    // useEffect(() => {
-    //     setCheckedElements(storedElementList)
-    // }, [storedElementList]);
 
     useEffect(() => {
         elementsRef.current = checkedElements;
@@ -106,6 +84,7 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
         setIndeterminate(false)
         elements.forEach(element => {
             element.checked = isChecked
+            //For solubility and methodology
             element.types?.forEach(type => {
                 type.checked = isChecked
                 type.methods?.forEach(method => {
@@ -146,7 +125,6 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
             }
         }
         setCheckedElements(elements.filter(element => element.checked))
-        //setOceanData(filterResearchData(researchData))
     };
 
     function filterResearchData(researchData) {
@@ -171,7 +149,6 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
         researchData.forEach(research => {
             let numberOfStudies = filteredData.length
             checkedElements.every(element => {
-                //if (element.checked) {
                 if (research[element.name] || research[element.name] > 0) {
                     if (element.types != undefined) {
                         element.types.every(type => {
@@ -202,10 +179,6 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
                     return false//Breaks the loop and moves to next paper
                 }
                 return true;
-                // }
-                // else {
-                //     return true;//continues to the next element
-                // }
             });
             if (filteredData.length > numberOfStudies) {
                 oceans.forEach(function (ocean) {
@@ -215,60 +188,7 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
         })
         return filteredData;
     }
-    // useEffect(() => {
-    //     // This will be executed when checkbox changes
-    //     let filteredData = []
-    //     oceans.forEach(function (ocean) {
-    //         ocean.studies = 0
-    //     });
-    //     researchData.forEach(research => {
-    //         let numberOfStudies = filteredData.length
-    //         elements.every(element => {
-    //             if (element.checked) {
-    //                 if (research[element.name] || research[element.name] > 0) {
-    //                     if (element.types != undefined) {
-    //                         element.types.every(type => {
-    //                             if (type.name == research["Solubility"] && type.checked) {
-    //                                 if (type.methods != undefined) {
-    //                                     type.methods.every(method => {
-    //                                         if (research["Methodology"]?.includes(method.name) && method.checked) {
-    //                                             filteredData.push(research)
-    //                                             return false;//Breaks the loop once paper has a matching leaching methodology
-    //                                         }
-    //                                         return true;
-    //                                     });
-    //                                 }
-    //                                 else {
-    //                                     filteredData.push(research)
-    //                                     return false;//Breaks the loop once paper has a matching solubility data
-    //                                 }
-    //                             }
-    //                             return true;
-    //                         });
-    //                     }
-    //                     else {
-    //                         filteredData.push(research)
-    //                         return false//Breaks the loop once paper has one matching element
-    //                     }
-    //                 }
-    //                 if (filteredData.length > numberOfStudies) {
-    //                     return false//Breaks the loop and moves to next paper
-    //                 }
-    //                 return true;
-    //             }
-    //             else {
-    //                 return true;
-    //             }
-    //         });
-    //         if (filteredData.length > numberOfStudies) {
-    //             oceans.forEach(function (ocean) {
-    //                 ocean.studies += research["Ocean"] != undefined ? research["Ocean"].includes(ocean.name) : 0
-    //             });
-    //         }
-    //     })
-    //     setOceanData(filteredData)
-    // }, [elements]);
-
+    
     const showResearchTable = (oceanName, studies) => event => {
         if (studies > 0) {
             let research = oceanData.filter(x => x["Ocean"]?.includes(oceanName))
@@ -278,6 +198,7 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
             alert("There are no studies for selected criteria")
         }
     }
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Grid container>

@@ -16,7 +16,7 @@ function Home() {
 
     //Fetch data from excel file
     useEffect(() => {
-        const filePath = process.env.PUBLIC_URL + "/mapped_studies_new.xlsx";
+        const filePath = process.env.PUBLIC_URL + "/mapped_studies.xlsx";
         fetch(filePath)
             .then(response => response.arrayBuffer())
             .then(buffer => {
