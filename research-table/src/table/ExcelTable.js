@@ -141,11 +141,12 @@ const ExcelTable = ({ showFullData, researchData, showAllStudiesBtn }) => {
 
     useEffect(() => {
         if (researchData && researchData.length > 0) {
-            let header = Object.keys(researchData[0]).slice(0, 17)
-            header.splice(14, 1)
-            header.splice(6, 6)
-            header.splice(3, 2)
-            setHeadData(header);
+            // let header = Object.keys(researchData[0]).slice(0, 17)
+            // const filteredArray = header.filter(item => !new Set(["Referecnes", "Year", "Title", "Ocean", "Elements", "Major Ions (MI)", "Solubility", "Methodology"]).has(item));
+            // header.splice(14, 1)
+            // header.splice(6, 6)
+            // header.splice(3, 2)
+            setHeadData(["Referecnes", "Year", "Title", "Ocean", "Elements", "Major Ions (MI)", "Solubility", "Methodology"]);
             setRowData(researchData)
         }
     }, [researchData])
