@@ -146,7 +146,7 @@ const ExcelTable = ({ showFullData, researchData, showAllStudiesBtn }) => {
             // header.splice(14, 1)
             // header.splice(6, 6)
             // header.splice(3, 2)
-            setHeadData(["Referecnes", "Year", "Title", "Ocean", "Elements", "Major Ions (MI)", "Solubility", "Methodology"]);
+            setHeadData(["References", "Year", "Title", "Ocean", "Elements", "Major Ions (MI)", "Solubility", "Methodology"]);
             setRowData(researchData)
         }
     }, [researchData])
