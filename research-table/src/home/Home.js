@@ -13,6 +13,7 @@ function Home() {
     const [activeTab, setActiveTab] = useState("2");
     const [ocean, setOcean] = useState("");
     const[checkedElements, setCheckedElements] = useState([])
+    const[showAllStudiesBtn, setShowAllStudiesBtn] = useState(false)
 
     //Fetch data from excel file
     useEffect(() => {
@@ -32,6 +33,7 @@ function Home() {
 
     //display data from selected ocean and elements
     const selectedResearch = (selectedResearch) => {
+        setShowAllStudiesBtn(true)
         openResearchTable(selectedResearch)
     }
     const openResearchTable = (selectedResearch) => {
@@ -42,6 +44,7 @@ function Home() {
     //show all data on table
     const showFullData = (showFullData) => {
         if (showFullData) {
+            setShowAllStudiesBtn(false)
             openResearchTable(researchData)
         }
     }
@@ -72,7 +75,7 @@ function Home() {
                         </Box>
                         {/* <TabPanel value="1"></TabPanel> */}
                         <TabPanel value="2"><OceanMap selectedResearch={selectedResearch} researchData={researchData} storedElementList={checkedElements} beforeUnmount={getCheckedElements}/></TabPanel>
-                        <TabPanel value="3"><ExcelTable showFullData={showFullData} researchData={oceanData} /></TabPanel>
+                        <TabPanel value="3"><ExcelTable showFullData={showFullData} researchData={oceanData} showAllStudiesBtn={showAllStudiesBtn}/></TabPanel>
                         {/* <TabPanel value="4"></TabPanel> */}
                         {/* <TabPanel value="5"></TabPanel> */}
                         <TabPanel value="6"><Overview /></TabPanel>

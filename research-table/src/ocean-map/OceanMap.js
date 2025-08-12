@@ -69,7 +69,7 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
         }
 
         //Executes As component is removed, stores the checked elements list
-        return () => {            
+        return () => {
             beforeUnmount(elementsRef.current);
         };
     }, []);
@@ -115,12 +115,30 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
                 type.methods?.forEach(method => {
                     method.checked = type.checked
                 });
+                if (!type.checked) {
+                    //Uncheck upper level checkbox if all lower level checkboxes are unchecked
+                    let checkedTypes = element.types?.filter(type => type.checked)
+                    if (checkedTypes.length === 0) {
+                        element.checked = false
+                    }
+                }
             }
             else if (method != null) {
                 method.checked = !method.checked
                 if (method.checked) {
                     type.checked = true
                     element.checked = true
+                }
+                else {
+                    //Uncheck upper level checkbox if all lower level checkboxes are unchecked
+                    let checkedMethods = type.methods?.filter(method => method.checked)
+                    if (checkedMethods.length === 0) {
+                        type.checked = false
+                    }
+                    let checkedTypes = element.types?.filter(type => type.checked)
+                    if (checkedTypes.length === 0) {
+                        element.checked = false
+                    }
                 }
             }
         }
@@ -188,7 +206,7 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
         })
         return filteredData;
     }
-    
+
     const showResearchTable = (oceanName, studies) => event => {
         if (studies > 0) {
             let research = oceanData.filter(x => x["Ocean"]?.includes(oceanName))
@@ -211,7 +229,7 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
                         <Button
                             variant="contained"
                             size="medium"
-                            style={{ width: '80%', marginBottom: "10px", textAlign: "left" }}
+                            style={{ width: '90%', marginBottom: "10px", textAlign: "left" }}
                             onClick={(event) => handleSelectAllChange(false)}
                             endIcon={<ClearIcon />}>
                             Reset Selection

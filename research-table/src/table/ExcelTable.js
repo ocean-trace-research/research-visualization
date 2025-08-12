@@ -130,7 +130,7 @@ TablePaginationActions.propTypes = {
     rowsPerPage: PropTypes.number.isRequired,
 };
 
-const ExcelTable = ({ showFullData, researchData }) => {
+const ExcelTable = ({ showFullData, researchData, showAllStudiesBtn }) => {
     const [headData, setHeadData] = useState([]);
     const [rowData, setRowData] = useState([]);
     const [page, setPage] = React.useState(0);
@@ -204,7 +204,9 @@ const ExcelTable = ({ showFullData, researchData }) => {
                         onChange={handleChangeSearchQuery}
                         style={{ align: "left", marginLeft: "10px", float: "left", marginTop: "10px", marginBottom: "10px", width: "500px" }}
                     />
-                    <Button variant="contained" size="medium" style={{ marginTop: "20px" }} onClick={() => handleShowAllClick()}>Show All Studies</Button>
+                    {showAllStudiesBtn && (
+                        <Button variant="contained" size="medium" style={{ marginTop: "20px" }} onClick={() => handleShowAllClick()}>Show All Studies</Button>
+                    )}
                     {filteredData.length > 0 && (
                         <Table stickyHeader aria-label="sticky custom pagination table">
                             <caption>A table with research papers related to trace elements in ocean</caption>
@@ -222,7 +224,7 @@ const ExcelTable = ({ showFullData, researchData }) => {
                                         <TableCell sx={{ width: '5%' }}>{row["Year"]}</TableCell>
                                         <TableCell sx={{ width: '30%' }}>{row["Title"]}</TableCell>
                                         <TableCell sx={{ width: '15%' }}>{row["Ocean"]?.replaceAll("|", " ") ?? ""}</TableCell>
-                                        <TableCell sx={{ width: '15%' }}>{row["Elements"]? row["Elements"] : ""}</TableCell>
+                                        <TableCell sx={{ width: '15%' }}>{row["Elements"] ? row["Elements"] : ""}</TableCell>
                                         <TableCell sx={{ width: '10%' }}>{row["Major Ions (MI)"] == 1 ? "Yes" : ""}</TableCell>
                                         <TableCell sx={{ width: '5%' }}>{row["Solubility"]}</TableCell>
                                         <TableCell sx={{ width: '10%' }}>{row["Methodology"]}</TableCell>
