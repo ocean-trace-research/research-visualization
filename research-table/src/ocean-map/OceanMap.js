@@ -3,6 +3,7 @@ import "leaflet/dist/leaflet.css";
 import { Grid2 as Grid, Checkbox, FormControlLabel, FormGroup, Typography, Button, Box } from '@mui/material';
 import { useEffect, useRef, useState } from "react";
 import ClearIcon from '@mui/icons-material/Clear';
+import { Label } from "@mui/icons-material";
 
 const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnmount }) => {
 
@@ -58,6 +59,7 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
 
     const [checkedElements, setCheckedElements] = useState([]);
     const elementsRef = useRef(checkedElements)
+    const [hoveredId, setHoveredId] = useState(null);
 
     useEffect(() => {
         //Executes As component loads
@@ -262,17 +264,22 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
                                                         onChange={(event) => handleCheckboxChange(element, index, type)}
                                                     />
                                                 } />
-                                                {type.methods?.map((method) => (
-                                                    <div key={method.name}>
-                                                        <FormControlLabel style={{ marginLeft: "20px" }} label={method.name} control={
-                                                            <Checkbox
-                                                                checked={method.checked}
-                                                                value={method.name}
-                                                                onChange={(event) => handleCheckboxChange(element, index, type, method)}
-                                                            />
-                                                        } />
+                                                {type.methods != undefined && (
+                                                    <div>
+                                                        <Typography style={{ marginLeft: "30px" }}>Leach</Typography>
+                                                        {type.methods?.map((method) => (
+                                                            <div key={method.name}>
+                                                                <FormControlLabel style={{ marginLeft: "20px" }} label={method.name} control={
+                                                                    <Checkbox
+                                                                        checked={method.checked}
+                                                                        value={method.name}
+                                                                        onChange={(event) => handleCheckboxChange(element, index, type, method)}
+                                                                    />
+                                                                } />
+                                                            </div>
+                                                        ))}
                                                     </div>
-                                                ))}
+                                                )}
                                             </div>
                                         ))}
                                     </Grid>
@@ -290,7 +297,7 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
                 }}
                 >
                     {/* <div > */}
-                    <Typography style={{ fontWeight: "bold" }}>Each tooltip shows number of studies done for that ocean. Double click on the tooltip to see studies for that ocean</Typography>
+                    <Typography style={{ fontWeight: "bold" }}>Each region shows number of aerosol studies. Filter studies by selecting elements in the list. Double click on the name to see studies for that region.</Typography>
                     <MapContainer
                         center={[0, 0]}
                         zoom={2}
@@ -306,13 +313,20 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
                             attribution="© OpenStreetMap contributors"
                             noWrap={true}
                         />
-                        {oceans.map((ocean, index) => (
+                        {oceans.map((ocean, index) => ocean.active && (
                             <Polygon
                                 key={index}
                                 positions={ocean.coordinates}
-                                pathOptions={{ color: ocean.color, fillOpacity: 0.3 }}
+                                eventHandlers={{
+                                    mouseover: () => setHoveredId(index),
+                                    mouseout: () => setHoveredId(null),
+                                    dblclick: showResearchTable(ocean.name, ocean.studies)
+                                }}
+                                pathOptions={
+                                    hoveredId === index ? { color: ocean.color, fillOpacity: 0.3 } : { color: ocean.color, fillOpacity: 0 }
+                                }
                             >
-                                <Tooltip permanent direction="center" interactive={true} style={{ cursor: "pointer" }}>
+                                <Tooltip direction="center" interactive={true} style={{ cursor: "pointer" }}>
                                     <span onDoubleClick={showResearchTable(ocean.name, ocean.studies)} style={{ cursor: "pointer" }}>
                                         <strong>{ocean.name} : {ocean.studies}</strong>
                                     </span>
