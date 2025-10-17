@@ -3,7 +3,6 @@ import "leaflet/dist/leaflet.css";
 import { Grid2 as Grid, Checkbox, FormControlLabel, FormGroup, Typography, Button, Box } from '@mui/material';
 import { useEffect, useRef, useState } from "react";
 import ClearIcon from '@mui/icons-material/Clear';
-import { Label } from "@mui/icons-material";
 
 const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnmount }) => {
 
@@ -59,7 +58,7 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
 
     const [checkedElements, setCheckedElements] = useState([]);
     const elementsRef = useRef(checkedElements)
-    const [hoveredId, setHoveredId] = useState(null);
+    //const [hoveredId, setHoveredId] = useState(null);
 
     useEffect(() => {
         //Executes As component loads
@@ -219,6 +218,9 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
         }
     }
 
+    const swapCoordinates = coords =>
+    coords.map(polygon => polygon.map(([lng, lat]) => [lat, lng]));
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Grid container>
@@ -303,32 +305,35 @@ const OceanMap = ({ selectedResearch, researchData, storedElementList, beforeUnm
                         zoom={2}
                         minZoom={2}
                         maxZoom={2}
-                        style={{ height: '110%', width: '100%', backgroundColor: "#ffffff !important" }}
+                        style={{ height: '110%', width: '100%', backgroundColor: "white" }}
                         worldCopyJump={false}
                         maxBounds={[[-90, -180], [90, 180]]}
                         maxBoundsViscosity={1.0}
                     >
                         <TileLayer
-                            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            attribution="© OpenStreetMap contributors"
+                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png"
+                            attribution='&copy; <a href="https://carto.com/">CARTO</a>'
                             noWrap={true}
                         />
                         {oceans.map((ocean, index) => ocean.active && (
                             <Polygon
                                 key={index}
-                                positions={ocean.coordinates}
-                                eventHandlers={{
-                                    mouseover: () => setHoveredId(index),
-                                    mouseout: () => setHoveredId(null),
-                                    dblclick: showResearchTable(ocean.name, ocean.studies)
-                                }}
-                                pathOptions={
-                                    hoveredId === index ? { color: ocean.color, fillOpacity: 0.3 } : { color: ocean.color, fillOpacity: 0 }
-                                }
+                                positions={swapCoordinates(ocean.coordinates)}
+                                // eventHandlers={{
+                                //     mouseover: () => setHoveredId(index),
+                                //     mouseout: () => setHoveredId(null),
+                                //     dblclick: showResearchTable(ocean.name, ocean.studies)
+                                // }}
+                                // pathOptions={
+                                //     hoveredId === index ? { color: ocean.color, fillOpacity: 0.2 } : { color: ocean.color, fillOpacity: 0 }
+                                // }
+                                pathOptions={{ color: ocean.color, fillOpacity: 0.4 }}
                             >
-                                <Tooltip direction="center" interactive={true} style={{ cursor: "pointer" }}>
+                                <Tooltip permanent direction="center" style={{ cursor: "pointer" }}>
                                     <span onDoubleClick={showResearchTable(ocean.name, ocean.studies)} style={{ cursor: "pointer" }}>
-                                        <strong>{ocean.name} : {ocean.studies}</strong>
+                                        <div><strong>{ocean.name}</strong></div>
+                                        <div><strong>{"Studies : " + ocean.studies}</strong></div>
+                                        <div><strong>{"Latest : " + ocean.latest}</strong></div>
                                     </span>
                                 </Tooltip>
                             </Polygon>
